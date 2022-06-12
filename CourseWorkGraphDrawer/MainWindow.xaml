@@ -1,0 +1,178 @@
+﻿<Window x:Class="CourseWorkGraphDrawer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CourseWorkGraphDrawer"
+        xmlns:xctk1="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="GraphDrawer" Height="600" Width="1200" Loaded="OnMWindowLoaded">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+
+        <Style TargetType="TextBox" x:Key="triggers">
+            <Setter Property="FontSize" Value="16"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="Canvas.ZIndex" Value="2"/>
+                </Trigger>
+                <Trigger Property="IsFocused" Value="False">
+                    <Setter Property="Canvas.ZIndex" Value="0"/>
+                </Trigger>
+                <EventTrigger RoutedEvent="GotFocus">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Width" Duration="0:0:0.3">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <LinearDoubleKeyFrame Value="50" KeyTime="0:0:0.07"/>
+                                    <LinearDoubleKeyFrame Value="70" KeyTime="0:0:0.1"/>
+                                    <LinearDoubleKeyFrame Value="90" KeyTime="0:0:0.15"/>
+                                    <LinearDoubleKeyFrame Value="130" KeyTime="0:0:0.18"/>
+                                    <LinearDoubleKeyFrame Value="150" KeyTime="0:0:0.3"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="LostFocus">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Width" Duration="0:0:0.3">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <LinearDoubleKeyFrame Value="150" KeyTime="0:0:0.07"/>
+                                    <LinearDoubleKeyFrame Value="130" KeyTime="0:0:0.1"/>
+                                    <LinearDoubleKeyFrame Value="90" KeyTime="0:0:0.15"/>
+                                    <LinearDoubleKeyFrame Value="70" KeyTime="0:0:0.18"/>
+                                    <LinearDoubleKeyFrame Value="40" KeyTime="0:0:0.3"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid x:Name="MainGrid">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="370"/>
+        </Grid.ColumnDefinitions>
+
+        <local:GraphCanvas x:Name="canvas" Grid.Column="0">
+            <TextBlock x:Name="mousePosTextBlock"/>
+        </local:GraphCanvas>
+
+        
+
+        <Grid Grid.Column="0" Height="100" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="15" Panel.ZIndex="4">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+
+            <Image x:Name="resetButton" Width="35" Height="35" Margin="2.5" Grid.Row="0" Source="https://www.freeiconspng.com/thumbs/restart-icon/black-panel-restart-system-icon--6.png" MouseDown="OnresetButtonMouseDown"/>
+            <Image x:Name="copyImageButton" Width="35" Height="35" Margin="2.5" Grid.Row="1" Source="https://www.freeiconspng.com/thumbs/copy-icon/copy-duplicate-editor-files-icon--18.png" MouseDown="OncopyImageButtonMouseDown"/>
+        </Grid>
+
+
+
+
+
+        <Border Grid.Column="1" BorderThickness="2 0 0 0" BorderBrush="Black" Background="Transparent" Panel.ZIndex="1">
+            <Grid x:Name="Info" Background="White"
+              Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="310"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="50"/>
+                </Grid.RowDefinitions>
+
+
+
+                <StackPanel Grid.Row="0" Margin="5">
+
+                    <TextBlock x:Name="ErrorMessageTBLock" 
+                            Margin="15 4" Text="" 
+                            TextAlignment="Center" 
+                            FontWeight="Bold"
+                            Foreground="Red"
+                           
+                           />
+                    <TextBlock Text="Функция :"/>
+                    <TextBox x:Name="GraphEnterTBox" Margin="15 10" Height="25" TextChanged="OnTextChanged" />
+
+                    <Button x:Name="DrawButton" Content="Нарисовать" Margin="15 5" Height="30" Width="250"  Click="OnDrawButtonClick"/>
+
+
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="От"  VerticalAlignment="Center"/>
+                        <TextBox   Text="-10" x:Name="minVal" Margin="5" Width="50" Height="30"  Style="{StaticResource triggers}" KeyDown="OnMinValKeyDown"/>
+                        <TextBlock Text="До"  VerticalAlignment="Center"/>
+                        <TextBox   Text="10" x:Name="maxVal" Margin="5" Width="50" Height="30" Style="{StaticResource triggers}" KeyDown="OnMaxValKeyDown"/>
+                        <TextBlock Text="Шаг"  VerticalAlignment="Center"/>
+                        <TextBox   Text="0.1" x:Name="step" Margin="5" Width="50" Height="30" Style="{StaticResource triggers}" KeyDown="OnStepKeyDown"/>
+                    </StackPanel>
+                    <StackPanel>
+                        <RadioButton x:Name="Polar" Content="Полярная система координат (градусы)"/>
+                        <RadioButton x:Name="Decart" Content="Декартова система координат" IsChecked="True"/>
+                        <StackPanel Orientation="Vertical" Margin="0 15">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Margin="8 0" Text="Стиль линии"/>
+                                <TextBlock Margin="15 0" Text="Цвет линии"/>
+                                <TextBlock Text="Толщина линии"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox x:Name="DashStyleComboBox" Width="103" Margin="5 2"/>
+                                <xctk1:ColorPicker x:Name="ColorPicker" 
+                                              Grid.Column="1"
+                                              Width="103"
+                                              Margin="5 2"
+                                              DisplayColorAndName="True"
+                                              AvailableColorsSortingMode="HueSaturationBrightness" ></xctk1:ColorPicker>
+                                <TextBox x:Name="ThicknessTextBox" Width="102" Margin="5 2" TextAlignment="Right"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+
+                </StackPanel>
+
+                <ListBox Margin="10" Grid.Row="1" x:Name="GraphsList" ItemsSource="{Binding Path=graphs}" KeyDown="OnGraphsListKeyDown" SelectionChanged="OnGraphsListSelectionChanged">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Height="25">
+                                <Border BorderBrush="Black" BorderThickness="0.2" Background="{Binding Path=Value.Brush}" Width="25" CornerRadius="14" Margin="8 0"/>
+                                <CheckBox IsChecked="{Binding Path=Value.ToShow}" Margin="5" Checked="OnGraphToShowCheckBoxCheckChanges" Unchecked="OnGraphToShowCheckBoxCheckChanges"/>
+                                <TextBlock Margin="15 0" Text="{Binding Path=Key.Function}" FontSize="16"/>
+                                <TextBlock Margin="15 0" Text="{Binding Path=Key.CoordinateSystem}" FontSize="16"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+                <StackPanel Orientation="Horizontal" Grid.Row="2">
+                    <Button Margin="15 5" x:Name="deleteGraphBtn" Content="Удалить график" Height="30" Width="150" Click="OndeleteGraphBtnClick"/>
+                    <Button x:Name="SettingsButton" Content="Настройки" Margin="20 5" Height="30" Width="150"  Click="OnSettingsButtonClick"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,26 @@
+﻿<Window x:Class="CourseWorkGraphDrawer.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CourseWorkGraphDrawer"
+        xmlns:xctk1="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="Settings" Height="270" Width="230">
+    <StackPanel Margin="15">
+        <TextBlock Text="Что изменить" Margin="15" TextAlignment="Center"/>
+        <ComboBox x:Name="targetComboBox">
+            <TextBlock Text="Цвет заднего фона"/>
+            <TextBlock Text="Цвет осей"/>
+            <TextBlock Text="Цвет пересечений"/>
+        </ComboBox>
+        <TextBlock Text="Цвет" Margin="15" TextAlignment="Center"/>
+        <xctk1:ColorPicker x:Name="ColorPicker" 
+           Margin="5"
+           DisplayColorAndName="True"
+           AvailableColorsSortingMode="HueSaturationBrightness" >
+        </xctk1:ColorPicker>
+
+        <Button Margin="27 10" x:Name="confirmButton" Content="Confirm" Click="OnconfirmButtonClick"/>
+    </StackPanel>
+</Window>
