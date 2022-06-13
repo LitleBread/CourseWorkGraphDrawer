@@ -79,9 +79,6 @@ namespace CourseWorkGraphDrawer
             mousePosTextBlock.SetValue(Canvas.TopProperty, mPos.Y - 20);
             mousePosTextBlock.Text = string.Format("{0:N4} ; {1:N4}", MousePositionRelativeToGraph.X, MousePositionRelativeToGraph.Y);
 
-
-
-
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 Point p = GetPointRelatively(e, sender as IInputElement, oldPos);

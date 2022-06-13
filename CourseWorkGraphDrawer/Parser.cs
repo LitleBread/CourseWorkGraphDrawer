@@ -11,32 +11,33 @@ namespace CourseWorkGraphDrawer
     {
         static Dictionary<string, int> operationOrder = new Dictionary<string, int>();
         static string[] unarOperations = {
-            "Math.Log",
-            "Math.Log10",
+            "Math.Abs",
+            "Math.Sqrt",
             "Math.Sin",
             "Math.Cos",
             "Math.Tan",
-            "Math.Sinh",
+            "Math.Asin",
+            "Math.Acos",
+            "Math.Atan",
+            "Math.Log",
+            "Math.Log10",
             "Math.Cosh",
-            "Math.Tanh",
-            "Math.Exp",
-            "Math.Abs",
-            "Math.Sqrt"
+            "Math.Sinh",
+            "Math.Tanh"
         };
-
         static Stack<string> numbers = new Stack<string>();
         static Stack<string> operations = new Stack<string>();
 
         static Parser()
         {
 
-            operationOrder.Add("+", 1);
-            operationOrder.Add("-", 1);
-            operationOrder.Add("*", 2);
-            operationOrder.Add("/", 2);
-            operationOrder.Add("^", 3);
-            operationOrder.Add("Math.Abs", 3);
-            operationOrder.Add("Math.Sqrt", 3);
+            operationOrder.Add("+", 0);
+            operationOrder.Add("-", 0);
+            operationOrder.Add("*", 1);
+            operationOrder.Add("/", 1);
+            operationOrder.Add("^", 2);
+            operationOrder.Add("Math.Abs", 2);
+            operationOrder.Add("Math.Sqrt", 2);
             operationOrder.Add("Math.Sin", 3);
             operationOrder.Add("Math.Cos", 3);
             operationOrder.Add("Math.Tan", 3);
@@ -66,22 +67,7 @@ namespace CourseWorkGraphDrawer
             for (int i = 0; i < parseArray.Length; i++)
             {
                 char p = parseArray[i];
-                if (p == '-')
-                {
-                    if ((parseArray[i + 1] >= '0' && parseArray[i + 1] <= '9') || parseArray[i + 1] == 'e' || parseArray[i + 1] == 'x' || parseArray[i + 1] == 'p')
-                    {
-                        if (i > 0)
-                        {
-                            if (parseArray[i - 1] != ')')
-                            {
-                                num += p;
-                                continue;
-                                //p = parseArray[index];
-                            }
-                        }
-                    }
-                }
-                else if ((p >= '0' && p <= '9' || p == '.') || p == 'e' || p == 'x' || p == 'p')
+                if ((p >= '0' && p <= '9' || p == '.') || p == 'e' || p == 'x' || p == 'p')
                 {
                     num += p;
                     if (i == parseArray.Length - 1)
@@ -136,34 +122,37 @@ namespace CourseWorkGraphDrawer
             {
                 if (operations.Peek() == "(")
                 {
-                    operations.Pop();
+                    numbers.Push(operations.Pop() + numbers.Pop() + ")");
+                    continue;
+                }
+                if (numbers.Count == 1 && operations.Count == 1 && operations.Peek() == "-")
+                {
+                    numbers.Push(operations.Pop() + numbers.Pop());
                     continue;
                 }
                 DoOperation(operations.Pop());
-            }
-            if (numbers.Count > 1)
-            {
-                DoOperation("*");
             }
 
             return numbers.Pop();
         }
 
 
-
+        static int breaketsCount = 0;
         private static void TryPushOperation(string currentOperation)
         {
-            if (currentOperation == ")")
+            if (currentOperation == ")" && breaketsCount > 0)
             {
                 if (operations.Peek() == "(")
                 {
-                    operations.Pop();
+                    numbers.Push(operations.Pop() + numbers.Pop() + currentOperation);
                 }
                 DoOperation(operations.Pop());
+                breaketsCount--;
             }
             else if (currentOperation == "(")
             {
                 operations.Push(currentOperation);
+                breaketsCount++;
             }
             else if (operations.Count > 0)
             {
@@ -223,11 +212,7 @@ namespace CourseWorkGraphDrawer
                 string num1 = numbers.Pop();
                 res = $"{num1}{operation}{num2}";
             }
-
-
             numbers.Push(res);
         }
-
-
     }
 }

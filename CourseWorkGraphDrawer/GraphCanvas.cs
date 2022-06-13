@@ -108,7 +108,7 @@ namespace CourseWorkGraphDrawer
             for (int y = 0; y < coordinates.GetLength(1); y++)
             {
                 double xPos = zero.X > 0 ? zero.X + 15 : 15;
-                xPos = xPos < ActualWidth ? xPos : ActualWidth - 15;
+                xPos = xPos < ActualWidth ? xPos : ActualWidth - 35;
 
                 coordinates[1, y].SetValue(Canvas.LeftProperty, xPos);
                 double yPos = 15 + zero.Y + ((y < coordinates.GetLength(1) / 2) ? ActualHeight
@@ -119,7 +119,6 @@ namespace CourseWorkGraphDrawer
                 coordinates[1, y].Text = string.Format("{0:N2}", position.Y);
             }
         }
-
         public void AddGraph(Graph graph, Style style, Point zero, double scaleFactor)
         {
             Polyline polyline = new Polyline();
@@ -138,7 +137,6 @@ namespace CourseWorkGraphDrawer
             this.Children.Add(polyline);
 
         }
-
         public void RemoveGraph(Graph graph)
         {
             var toRemoveIndex = graphs.IndexOf(graph);
@@ -289,7 +287,5 @@ namespace CourseWorkGraphDrawer
         {
             this.Background = Settings.BackgroundBrush;
         }
-
-
     }
 }
