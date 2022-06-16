@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace CourseWorkGraphDrawer
 {
@@ -22,24 +17,19 @@ namespace CourseWorkGraphDrawer
         private double scaleFactor;
         private Point oldPos;
 
-
         private void ResetPositions()
         {
             scaleFactor = 24;
             zero = new Point(canvas.ActualWidth / 2, canvas.ActualHeight / 2);
             canvas.SetAxis(zero);
             canvas.CalculatePointsPositions(zero, scaleFactor);
-
-
         }
-
-
 
         public MainWindow()
         {
             InitializeComponent();
 
-            this.canvas = new GraphCanvas();
+            canvas = new GraphCanvas();
 
 
             mousePosTextBlock = new TextBlock();
@@ -50,6 +40,9 @@ namespace CourseWorkGraphDrawer
             mousePosTextBlock.FontWeight = FontWeights.Bold;
             mousePosTextBlock.FontSize = 14;
             mousePosTextBlock.SetValue(Canvas.ZIndexProperty, 2);
+
+            resetButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\restart.png"));
+            saveImageButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\saveImage.png"));
 
             canvas.Children.Add(mousePosTextBlock);
             MainGrid.Children.Add(canvas);
@@ -200,7 +193,7 @@ namespace CourseWorkGraphDrawer
             }
         }
 
-        private void OncopyImageButtonMouseDown(object sender, MouseButtonEventArgs e)
+        private void OnSaveImageButtonMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -260,12 +253,13 @@ namespace CourseWorkGraphDrawer
 
         private void OnSettingsButtonClick(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settings = new SettingsWindow();
-            settings.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            SettingsWindow settings = new SettingsWindow
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterScreen
+            };
             settings.Activate();
             settings.Show();
         }
-
     }
 
 }

@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:CourseWorkGraphDrawer"
         xmlns:xctk1="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
+        Language="ru"
         Title="GraphDrawer" Height="600" Width="1200" Loaded="OnMWindowLoaded">
     <Window.Resources>
         <Style TargetType="TextBlock">
@@ -26,7 +27,66 @@
         </Style>
 
 
-        <Style TargetType="TextBox" x:Key="triggers">
+        <Style TargetType="Image" x:Key="ClickableImage">
+            <Setter Property="Width" Value="35"/>
+            <Setter Property="Height" Value="35"/>
+            <Style.Triggers>
+                <EventTrigger RoutedEvent="MouseDown">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Width" Duration="0:0:0.1">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <LinearDoubleKeyFrame Value="35" KeyTime="0:0:0.01"/>
+                                    <LinearDoubleKeyFrame Value="34" KeyTime="0:0:0.03"/>
+                                    <LinearDoubleKeyFrame Value="33" KeyTime="0:0:0.05"/>
+                                    <LinearDoubleKeyFrame Value="31" KeyTime="0:0:0.07"/>
+                                    <LinearDoubleKeyFrame Value="28" KeyTime="0:0:0.1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Height" Duration="0:0:0.3">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <LinearDoubleKeyFrame Value="35" KeyTime="0:0:0.01"/>
+                                    <LinearDoubleKeyFrame Value="34" KeyTime="0:0:0.03"/>
+                                    <LinearDoubleKeyFrame Value="33" KeyTime="0:0:0.05"/>
+                                    <LinearDoubleKeyFrame Value="31" KeyTime="0:0:0.07"/>
+                                    <LinearDoubleKeyFrame Value="28" KeyTime="0:0:0.1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <EventTrigger.Actions>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Width" Duration="0:0:0.3">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <LinearDoubleKeyFrame Value="28" KeyTime="0:0:0.01"/>
+                                    <LinearDoubleKeyFrame Value="31" KeyTime="0:0:0.03"/>
+                                    <LinearDoubleKeyFrame Value="33" KeyTime="0:0:0.05"/>
+                                    <LinearDoubleKeyFrame Value="34" KeyTime="0:0:0.07"/>
+                                    <LinearDoubleKeyFrame Value="35" KeyTime="0:0:0.1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetProperty="Height" Duration="0:0:0.3">
+                                <DoubleAnimationUsingKeyFrames>
+                                    <LinearDoubleKeyFrame Value="28" KeyTime="0:0:0.01"/>
+                                    <LinearDoubleKeyFrame Value="31" KeyTime="0:0:0.03"/>
+                                    <LinearDoubleKeyFrame Value="33" KeyTime="0:0:0.05"/>
+                                    <LinearDoubleKeyFrame Value="34" KeyTime="0:0:0.07"/>
+                                    <LinearDoubleKeyFrame Value="35" KeyTime="0:0:0.1"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger.Actions>
+                </EventTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="TextBox" x:Key="StrechingTextBlock">
             <Setter Property="FontSize" Value="16"/>
             <Style.Triggers>
                 <Trigger Property="IsFocused" Value="True">
@@ -68,6 +128,7 @@
             </Style.Triggers>
         </Style>
 
+
     </Window.Resources>
 
     <Grid x:Name="MainGrid">
@@ -89,8 +150,8 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Image x:Name="resetButton" Width="35" Height="35" Margin="2.5" Grid.Row="0" Source="https://www.freeiconspng.com/thumbs/restart-icon/black-panel-restart-system-icon--6.png" MouseDown="OnresetButtonMouseDown"/>
-            <Image x:Name="copyImageButton" Width="35" Height="35" Margin="2.5" Grid.Row="1" Source="https://www.freeiconspng.com/thumbs/copy-icon/copy-duplicate-editor-files-icon--18.png" MouseDown="OncopyImageButtonMouseDown"/>
+            <Image x:Name="resetButton" Style="{StaticResource ClickableImage}" Margin="2.5" Grid.Row="0" MouseDown="OnresetButtonMouseDown"/>
+            <Image x:Name="saveImageButton" Style="{StaticResource ClickableImage}" Margin="2.5" Grid.Row="1" MouseDown="OnSaveImageButtonMouseDown"/>
         </Grid>
 
 
@@ -125,11 +186,11 @@
 
                     <StackPanel Orientation="Horizontal" >
                         <TextBlock Text="От"  VerticalAlignment="Center"/>
-                        <TextBox   Text="-10" x:Name="minVal" Margin="5" Width="50" Height="30"  Style="{StaticResource triggers}" KeyDown="OnMinValKeyDown"/>
+                        <TextBox   Text="-10" x:Name="minVal" Margin="5" Width="50" Height="30"  Style="{StaticResource StrechingTextBlock}" KeyDown="OnMinValKeyDown"/>
                         <TextBlock Text="До"  VerticalAlignment="Center"/>
-                        <TextBox   Text="10" x:Name="maxVal" Margin="5" Width="50" Height="30" Style="{StaticResource triggers}" KeyDown="OnMaxValKeyDown"/>
+                        <TextBox   Text="10" x:Name="maxVal" Margin="5" Width="50" Height="30" Style="{StaticResource StrechingTextBlock}" KeyDown="OnMaxValKeyDown"/>
                         <TextBlock Text="Шаг"  VerticalAlignment="Center"/>
-                        <TextBox   Text="0.1" x:Name="step" Margin="5" Width="50" Height="30" Style="{StaticResource triggers}" KeyDown="OnStepKeyDown"/>
+                        <TextBox   Text="0.1" x:Name="step" Margin="5" Width="50" Height="30" Style="{StaticResource StrechingTextBlock}" KeyDown="OnStepKeyDown"/>
                     </StackPanel>
                     <StackPanel>
                         <RadioButton x:Name="Polar" Content="Полярная система координат (градусы)"/>
@@ -143,6 +204,7 @@
                             <StackPanel Orientation="Horizontal">
                                 <ComboBox x:Name="DashStyleComboBox" Width="103" Margin="5 2"/>
                                 <xctk1:ColorPicker x:Name="ColorPicker" 
+                                              
                                               Grid.Column="1"
                                               Width="103"
                                               Margin="5 2"
@@ -168,7 +230,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Orientation="Horizontal" Grid.Row="2">
-                    <Button Margin="15 5" x:Name="deleteGraphBtn" Content="Удалить график" Height="30" Width="150" Click="OndeleteGraphBtnClick"/>
+                    <Button Margin="15 5" x:Name="deleteGraphBtn" Content="Очистить список" Height="30" Width="150" Click="OndeleteGraphBtnClick"/>
                     <Button x:Name="SettingsButton" Content="Настройки" Margin="20 5" Height="30" Width="150"  Click="OnSettingsButtonClick"/>
                 </StackPanel>
 

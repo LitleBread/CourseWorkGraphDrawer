@@ -21,7 +21,6 @@ class Executor
 
         public static Func<double, double> GetDelegate(string code)
         {
-
             CompilerParameters options = new CompilerParameters
             {
                 GenerateInMemory = true
@@ -36,6 +35,5 @@ class Executor
             throw new CompileException();
         }
     }
-
     public class CompileException : Exception { }
 }

@@ -30,12 +30,6 @@ namespace CourseWorkGraphDrawer
             CoordinateSystem = isDecart ? "Декартовая" : "Полярная";
 
 
-
-            if (Function.ToLower().Contains("log") && min <= 0)
-            {
-                min = 1e-6;
-            }
-
             double yTemp;
             if (!isDecart)
             {
@@ -50,13 +44,12 @@ namespace CourseWorkGraphDrawer
                     {
                         yTemp = func(f);
                         ToDekart(yTemp, f, out x, out y);
-                        if (Math.Abs(x) > 100000 || Math.Abs(y) > 100000)
+                        if (Math.Abs(x) > 100000 || Math.Abs(y) > 100000 || double.IsNaN(y))
                             continue;
                         Points.Add(new Point(-x, y));
                     }
                     catch
                     {
-                        MessageBox.Show("Error polar");
                         continue;
                     }
 
@@ -69,13 +62,12 @@ namespace CourseWorkGraphDrawer
                     try
                     {
                         yTemp = func(x);
-                        if (Math.Abs(x) > 100000 || Math.Abs(yTemp) > 100000)
+                        if (Math.Abs(x) > 100000 || Math.Abs(yTemp) > 100000 || double.IsNaN(yTemp))
                             continue;
                         Points.Add(new Point(x, yTemp));
                     }
                     catch
                     {
-                        MessageBox.Show("Error decart");
                         continue;
                     }
                 }

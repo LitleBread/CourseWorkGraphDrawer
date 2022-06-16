@@ -93,12 +93,18 @@ namespace CourseWorkGraphDrawer
                 }
                 else if (operation != "")
                 {
-                    operation = operation.Replace("arcsin", "Math.Asin");
-                    operation = operation.Replace("arccos", "Math.Acos");
-                    operation = operation.Replace("arctan", "Math.Atan");
-                    operation = operation.Replace("sin", "Math.Sin");
-                    operation = operation.Replace("cos", "Math.Cos");
-                    operation = operation.Replace("tan", "Math.Tan");
+                    if (operation.Contains("arcsin") || operation.Contains("arccos") || operation.Contains("arctan"))
+                    {
+                        operation = operation.Replace("arcsin", "Math.Asin");
+                        operation = operation.Replace("arccos", "Math.Acos");
+                        operation = operation.Replace("arctan", "Math.Atan");
+                    }
+                    else
+                    {
+                        operation = operation.Replace("sin", "Math.Sin");
+                        operation = operation.Replace("cos", "Math.Cos");
+                        operation = operation.Replace("tan", "Math.Tan");
+                    }
                     operation = operation.Replace("sqrt", "Math.Sqrt");
                     operation = operation.Replace("abs", "Math.Abs");
                     operation = operation.Replace("exp", "Math.Exp");

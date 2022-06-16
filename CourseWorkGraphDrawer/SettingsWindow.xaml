@@ -6,15 +6,15 @@
         xmlns:local="clr-namespace:CourseWorkGraphDrawer"
         xmlns:xctk1="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Settings" Height="270" Width="230">
+        Title="Settings" Height="230" Width="230">
     <StackPanel Margin="15">
-        <TextBlock Text="Что изменить" Margin="15" TextAlignment="Center"/>
+        <TextBlock Text="Что изменить" Margin="10" TextAlignment="Center"/>
         <ComboBox x:Name="targetComboBox">
             <TextBlock Text="Цвет заднего фона"/>
             <TextBlock Text="Цвет осей"/>
             <TextBlock Text="Цвет пересечений"/>
         </ComboBox>
-        <TextBlock Text="Цвет" Margin="15" TextAlignment="Center"/>
+        <TextBlock Text="Цвет" Margin="10" TextAlignment="Center"/>
         <xctk1:ColorPicker x:Name="ColorPicker" 
            Margin="5"
            DisplayColorAndName="True"
