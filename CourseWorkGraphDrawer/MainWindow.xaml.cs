@@ -108,8 +108,6 @@ namespace CourseWorkGraphDrawer
                 graphStyleCoordination.Add(graph, style);
                 GraphsList.ItemsSource = null;
                 GraphsList.ItemsSource = graphStyleCoordination;
-
-
                 GraphEnterTBox.Text = string.Empty;
             }
             catch
@@ -135,14 +133,15 @@ namespace CourseWorkGraphDrawer
             canvas.CalculatePointsPositions(zero, scaleFactor);
         }
 
-        private void OndeleteGraphBtnClick(object sender, RoutedEventArgs e)
+        private void OnClearGraphListButtonClick(object sender, RoutedEventArgs e)
         {
-            if (GraphsList.SelectedItem == null)
+            foreach (var item in graphStyleCoordination)
             {
-                return;
+                canvas.HideGraph(item.Key);
+                canvas.RemoveGraph(item.Key);
             }
-            canvas.RemoveGraph(((KeyValuePair<Graph, Style>)GraphsList.SelectedItem).Key);
-            graphStyleCoordination.Remove(((KeyValuePair<Graph, Style>)GraphsList.SelectedItem).Key);
+            canvas.HideIntersections();
+            graphStyleCoordination.Clear();
             GraphsList.ItemsSource = null;
             GraphsList.ItemsSource = graphStyleCoordination;
         }
@@ -175,17 +174,24 @@ namespace CourseWorkGraphDrawer
 
         private void OnGraphToShowCheckBoxCheckChanges(object sender, RoutedEventArgs e)
         {
-            if (!(bool)(sender as CheckBox).IsChecked)
+            try
             {
-                canvas.HideGraph(((KeyValuePair<Graph, Style>)((sender as CheckBox).Parent as StackPanel).DataContext).Key);
+                if (!(bool)(sender as CheckBox).IsChecked && (sender as CheckBox).IsChecked != null)
+                {
+                    canvas.HideGraph(((KeyValuePair<Graph, Style>)((sender as CheckBox).Parent as StackPanel).DataContext).Key);
+                }
+                else
+                {
+                    canvas.ShowGraph(((KeyValuePair<Graph, Style>)((sender as CheckBox).Parent as StackPanel).DataContext).Key);
+                }
             }
-            else
+            catch
             {
-                canvas.ShowGraph(((KeyValuePair<Graph, Style>)((sender as CheckBox).Parent as StackPanel).DataContext).Key);
+
             }
         }
 
-        private void OnresetButtonMouseDown(object sender, MouseButtonEventArgs e)
+        private void OnResetButtonMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
@@ -198,7 +204,7 @@ namespace CourseWorkGraphDrawer
             if (e.ChangedButton == MouseButton.Left)
             {
 
-                string path = "image " + DateTime.Now.ToString("yyyy/MM/dd HH/mm/ss") + ".jpeg";
+                string path = Environment.CurrentDirectory + "\\Images\\" +"image " + DateTime.Now.ToString("yyyy/MM/dd HH/mm/ss") + ".jpeg";
 
                 using (FileStream fs = new FileStream(path, FileMode.Create))
                 {
@@ -209,7 +215,7 @@ namespace CourseWorkGraphDrawer
                     encoder.Save(fs);
                     Clipboard.SetDataObject(encoder.Frames[0], true);
                 }
-                MessageBox.Show("Coppied");
+                MessageBox.Show("Saved");
             }
         }
 
@@ -260,6 +266,27 @@ namespace CourseWorkGraphDrawer
             settings.Activate();
             settings.Show();
         }
-    }
 
+        private void OnInfoButtonClick(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(@"Программа поддерживает стандартные операции(+ - * / ^). 
+Также поддерживаются такие операции как:
+синус(sin), косинус(cos), такнгенс(tan), 
+обратные от них(arcsin, arccos, arctan)
+и их гиперболические версии(sinh, cosh, tanh), 
+логарифм по основанию е(log), 
+логарифм по основанию 10(lg),
+взятие квадратного корня числа(sqrt), 
+взятие модуля числа(abs).
+Если необходимо построить график типа операция(-значение), 
+то нужно заменить ""-значение"" на ""0-значение"", 
+иначе построение может быть некорректным
+======Примеры графиков======
+cos(x) - косинус
+x^2 или x*x - порабола
+1 / x - гипербола
+abs(0-x)
+sqrt(abs(cos(x))) * cos(300x) + sqrt(abs(x)) - 0.7 - сердечко", "Справка", MessageBoxButton.OK, MessageBoxImage.Question);
+        }
+    }
 }

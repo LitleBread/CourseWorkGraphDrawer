@@ -150,7 +150,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
 
-            <Image x:Name="resetButton" Style="{StaticResource ClickableImage}" Margin="2.5" Grid.Row="0" MouseDown="OnresetButtonMouseDown"/>
+            <Image x:Name="resetButton" Style="{StaticResource ClickableImage}" Margin="2.5" Grid.Row="0" MouseDown="OnResetButtonMouseDown"/>
             <Image x:Name="saveImageButton" Style="{StaticResource ClickableImage}" Margin="2.5" Grid.Row="1" MouseDown="OnSaveImageButtonMouseDown"/>
         </Grid>
 
@@ -178,7 +178,10 @@
                             Foreground="Red"
                            
                            />
-                    <TextBlock Text="Функция :"/>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Функция :"/>
+                        <Button x:Name="infoButton" Content="?" HorizontalAlignment="Right" Width="25" Height="25" Margin="250 2" FontWeight="Bold" Click="OnInfoButtonClick"/>
+                    </StackPanel>
                     <TextBox x:Name="GraphEnterTBox" Margin="15 10" Height="25" TextChanged="OnTextChanged" />
 
                     <Button x:Name="DrawButton" Content="Нарисовать" Margin="15 5" Height="30" Width="250"  Click="OnDrawButtonClick"/>
@@ -230,7 +233,7 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
                 <StackPanel Orientation="Horizontal" Grid.Row="2">
-                    <Button Margin="15 5" x:Name="deleteGraphBtn" Content="Очистить список" Height="30" Width="150" Click="OndeleteGraphBtnClick"/>
+                    <Button Margin="15 5" x:Name="deleteGraphBtn" Content="Очистить список" Height="30" Width="150" Click="OnClearGraphListButtonClick"/>
                     <Button x:Name="SettingsButton" Content="Настройки" Margin="20 5" Height="30" Width="150"  Click="OnSettingsButtonClick"/>
                 </StackPanel>
 
