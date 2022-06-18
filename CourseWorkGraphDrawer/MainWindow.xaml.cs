@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,10 +17,13 @@ namespace CourseWorkGraphDrawer
         private readonly Dictionary<Graph, Style> graphStyleCoordination;
         private double scaleFactor;
         private Point oldPos;
+        private Regex functionRegex = new Regex(@"[^0-9.\-a-zA-Z\(\)\*\^\+\\]");
+        private Regex restrictionRegex = new Regex(@"[^0-9\.\-]");
+
 
         private void ResetPositions()
         {
-            scaleFactor = 24;
+            scaleFactor = 48;
             zero = new Point(canvas.ActualWidth / 2, canvas.ActualHeight / 2);
             canvas.SetAxis(zero);
             canvas.CalculatePointsPositions(zero, scaleFactor);
@@ -30,7 +34,7 @@ namespace CourseWorkGraphDrawer
             InitializeComponent();
 
             canvas = new GraphCanvas();
-
+            
 
             mousePosTextBlock = new TextBlock();
             graphStyleCoordination = new Dictionary<Graph, Style>();
@@ -71,9 +75,10 @@ namespace CourseWorkGraphDrawer
             mousePosTextBlock.SetValue(Canvas.LeftProperty, mPos.X - 55);
             mousePosTextBlock.SetValue(Canvas.TopProperty, mPos.Y - 20);
             mousePosTextBlock.Text = string.Format("{0:N4} ; {1:N4}", MousePositionRelativeToGraph.X, MousePositionRelativeToGraph.Y);
-
+            (sender as Canvas).Cursor = Cursors.Arrow;
             if (e.LeftButton == MouseButtonState.Pressed)
             {
+                (sender as Canvas).Cursor = Cursors.SizeAll;
                 Point p = GetPointRelatively(e, sender as IInputElement, oldPos);
                 oldPos = e.GetPosition(sender as IInputElement);
                 zero = new Point(zero.X + p.X, zero.Y + p.Y);
@@ -98,21 +103,32 @@ namespace CourseWorkGraphDrawer
 
             Style style = new Style(thickness, DashStyleComboBox.Text, color, true);
 
-            string func = GraphEnterTBox.Text;
+            string func = FunctionTextBox.Text;
             bool isDec = (bool)Decart.IsChecked;
 
             try
             {
-                Graph graph = new Graph(func, isDec, minVal.Text, maxVal.Text, step.Text);
-                canvas.AddGraph(graph, style, zero, scaleFactor);
+                double.TryParse(minVal.Text.Replace(".", ","), out double min);
+                double.TryParse(maxVal.Text.Replace(".", ","), out double max);
+                double.TryParse(stepVal.Text.Replace(".", ","), out double step);
+                Graph graph = new Graph(func, isDec, min, max, step);
+                canvas.AddGraph(graph, style);
+                canvas.CalculatePointsPositions(zero, scaleFactor);
                 graphStyleCoordination.Add(graph, style);
                 GraphsList.ItemsSource = null;
                 GraphsList.ItemsSource = graphStyleCoordination;
-                GraphEnterTBox.Text = string.Empty;
+                FunctionTextBox.Text = string.Empty;
             }
             catch
             {
                 ErrorMessageTBLock.Text = "Неверно введена функция";
+            }
+        }
+        private void OnFunctionTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                OnDrawButtonClick(null, null);
             }
         }
 
@@ -165,7 +181,7 @@ namespace CourseWorkGraphDrawer
         {
             if (GraphsList.SelectedItem != null)
             {
-                GraphEnterTBox.Text = ((KeyValuePair<Graph, Style>)GraphsList.SelectedItem).Key.Function;
+                FunctionTextBox.Text = ((KeyValuePair<Graph, Style>)GraphsList.SelectedItem).Key.Function;
                 canvas.HideIntersections();
                 canvas.ShowIntersections(((KeyValuePair<Graph, Style>)GraphsList.SelectedItem).Key);
                 canvas.CalculatePointsPositions(zero, scaleFactor);
@@ -236,7 +252,7 @@ namespace CourseWorkGraphDrawer
         {
             if (e.Key == Key.D || e.Key == Key.Left)
             {
-                step.Focus();
+                stepVal.Focus();
             }
             else if (e.Key == Key.A || e.Key == Key.Right)
             {
@@ -255,6 +271,7 @@ namespace CourseWorkGraphDrawer
         private void OnTextChanged(object sender, TextChangedEventArgs e)
         {
             ErrorMessageTBLock.Text = string.Empty;
+            
         }
 
         private void OnSettingsButtonClick(object sender, RoutedEventArgs e)
@@ -288,5 +305,32 @@ x^2 или x*x - порабола
 abs(0-x)
 sqrt(abs(cos(x))) * cos(300x) + sqrt(abs(x)) - 0.7 - сердечко", "Справка", MessageBoxButton.OK, MessageBoxImage.Question);
         }
+
+        private bool IsFunctionTextAllowed(string text)
+        {
+            return functionRegex.IsMatch(text);
+        }
+        private bool IsRestrictionTextAllowed(string text)
+        {
+            return restrictionRegex.IsMatch(text);
+        }
+
+        private void OnFunctionPreviewInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = IsFunctionTextAllowed(e.Text);
+        }
+        private void OnRestrictionPreviewInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = IsRestrictionTextAllowed(e.Text);
+        }
+
+        private void OnGraphTextBoxKeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.Enter)
+            {
+                canvas.CalculatePointsPositions(zero, scaleFactor);
+            }
+        }
+
     }
 }

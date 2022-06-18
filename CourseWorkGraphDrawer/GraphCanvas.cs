@@ -1,45 +1,43 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace CourseWorkGraphDrawer
 {
-    class GraphCanvas : Canvas
+    internal class GraphCanvas : Canvas
     {
-        public List<Polyline> Lines { get; set; }
-        private List<Graph> graphs;
-        private TextBlock[,] coordinates;
+        private readonly List<Polyline> lines;
+        private readonly List<Graph> graphs;
+        private readonly TextBlock[,] coordinates;
+        private readonly Line[,] coordinatesGrid;
 
-        List<Border> intersections;
-        List<Point> intersectionsOrigin;
+        private readonly List<Border> intersections;
+        private readonly List<Point> intersectionsOrigin;
 
         private readonly Line xAxis;
         private readonly Line yAxis;
 
         public GraphCanvas()
         {
-            Lines = new List<Polyline>();
+            lines = new List<Polyline>();
             graphs = new List<Graph>();
             intersections = new List<Border>();
             intersectionsOrigin = new List<Point>();
-
-            coordinates = new TextBlock[2, 20];
+            int gridSize = 150;
+            coordinates = new TextBlock[2, gridSize];
+            coordinatesGrid = new Line[2, gridSize];
             for (int i = 0; i < coordinates.GetLength(0); i++)
             {
                 for (int j = 0; j < coordinates.GetLength(1); j++)
                 {
                     coordinates[i, j] = new TextBlock();
-                    coordinates[i, j].FontSize = 10;
+                    coordinatesGrid[i, j] = new Line();
+
+                    coordinates[i, j].FontSize = 15;
+                    coordinatesGrid[i, j].Stroke = Settings.GridBrush;
                     Children.Add(coordinates[i, j]);
+                    Children.Add(coordinatesGrid[i, j]);
                 }
             }
 
@@ -59,6 +57,7 @@ namespace CourseWorkGraphDrawer
             Settings.BackgroundColorChanged += OnBackgroundColorChanged;
             Settings.AxisColorChanged += OnAxisColorChanged;
             Settings.IntersectionsColorChanged += OnIntersectionsColorChanged;
+            Settings.GridColorChanged += OnGridColorChanged;
 
         }
         public void SetAxis(Point zero)
@@ -77,14 +76,14 @@ namespace CourseWorkGraphDrawer
         public void CalculatePointsPositions(Point zero, double scaleFactor)
         {
 
-            for (int i = 0; i < Lines.Count; i++)
+            for (int i = 0; i < lines.Count; i++)
             {
-                for (int j = 0; j < Lines[i].Points.Count; j++)
+                for (int j = 0; j < lines[i].Points.Count; j++)
                 {
                     double newX = graphs[i].Points[j].X * scaleFactor + zero.X;
                     double newY = graphs[i].Points[j].Y * scaleFactor + zero.Y;
 
-                    Lines[i].Points[j] = new Point(newX, newY);
+                    lines[i].Points[j] = new Point(newX, newY);
                 }
 
             }
@@ -98,12 +97,22 @@ namespace CourseWorkGraphDrawer
             }
             for (int x = 0; x < coordinates.GetLength(1); x++)
             {
-                double yPos = zero.Y > 0 ? zero.Y - 15 : 15;
-                yPos = yPos < ActualHeight ? yPos : ActualHeight - 15;
+                double yPos = zero.Y > 0 ? zero.Y - 25 : 15;
+                yPos = yPos < ActualHeight ? yPos : ActualHeight - 25;
+
                 coordinates[0, x].SetValue(Canvas.TopProperty, yPos);
-                coordinates[0, x].SetValue(Canvas.LeftProperty, 15 + zero.X + ((x < coordinates.GetLength(1) / 2) ? ActualWidth / coordinates.GetLength(1) * x : ActualWidth / coordinates.GetLength(1) * -(coordinates.GetLength(1) - x)));
+
+
+                double xPos = zero.X + (x < coordinates.GetLength(1) / 2 ? -1 : 1) *
+                    (x < coordinates.GetLength(1) / 2 ? x : x - coordinates.GetLength(1) / 2) * scaleFactor - 5;
+                coordinates[0, x].SetValue(Canvas.LeftProperty, xPos);
+                coordinatesGrid[0, x].X1 = xPos + 5;
+                coordinatesGrid[0, x].X2 = xPos + 5;
+                coordinatesGrid[0, x].Y1 = 0;
+                coordinatesGrid[0, x].Y2 = ActualHeight;
+
                 Point position = new Point((double)coordinates[0, x].GetValue(Canvas.LeftProperty) / -scaleFactor + zero.X / scaleFactor - 5 / scaleFactor, (double)coordinates[0, x].GetValue(Canvas.TopProperty) / (-scaleFactor) + zero.Y / scaleFactor);
-                coordinates[0, x].Text = string.Format("{0:N2}", -position.X);
+                coordinates[0, x].Text = string.Format("{0:N0}", -position.X);
             }
             for (int y = 0; y < coordinates.GetLength(1); y++)
             {
@@ -111,52 +120,62 @@ namespace CourseWorkGraphDrawer
                 xPos = xPos < ActualWidth ? xPos : ActualWidth - 35;
 
                 coordinates[1, y].SetValue(Canvas.LeftProperty, xPos);
-                double yPos = 15 + zero.Y + ((y < coordinates.GetLength(1) / 2) ? ActualHeight
-                    / coordinates.GetLength(1) * y : ActualHeight / coordinates.GetLength(1) *
-                    -(coordinates.GetLength(1) - y));
+
+
+                double yPos = zero.Y + ((y < coordinates.GetLength(1) / 2) ? -1 : 1) *
+                    ((y < coordinates.GetLength(1) / 2) ? y : y - coordinates.GetLength(1) / 2) * scaleFactor - 5;
                 coordinates[1, y].SetValue(Canvas.TopProperty, yPos);
+                coordinatesGrid[1, y].X1 = 0;
+                coordinatesGrid[1, y].X2 = ActualWidth;
+                coordinatesGrid[1, y].Y1 = yPos + 5;
+                coordinatesGrid[1, y].Y2 = yPos + 5;
+
+
                 Point position = new Point((double)coordinates[1, y].GetValue(Canvas.LeftProperty) / scaleFactor + zero.X / scaleFactor, (double)coordinates[1, y].GetValue(Canvas.TopProperty) / (-scaleFactor) + zero.Y / scaleFactor - 5 / scaleFactor);
-                coordinates[1, y].Text = string.Format("{0:N2}", position.Y);
+                coordinates[1, y].Text = string.Format("{0:N0}", position.Y);
             }
         }
-        public void AddGraph(Graph graph, Style style, Point zero, double scaleFactor)
+        public void AddGraph(Graph graph, Style style)
         {
-            Polyline polyline = new Polyline();
-            polyline.Stroke = style.Brush;
-            polyline.StrokeDashArray = style.DashPattern;
-            polyline.StrokeThickness = style.Thickness;
-
-            foreach (var item in graph.Points)
+            Polyline polyline = new Polyline
             {
+                Stroke = style.Brush,
+                StrokeDashArray = style.DashPattern,
+                StrokeThickness = style.Thickness,
+                Focusable = true
+            };
+            polyline.GotFocus += OnPolylineGotFocus;
+            polyline.LostFocus += OnPolylineLostFocus;
 
-                polyline.Points.Add(new Point(item.X * scaleFactor + zero.X, item.Y * scaleFactor + zero.Y));
-
+            foreach (Point item in graph.Points)
+            {
+                polyline.Points.Add(new Point(item.X , item.Y));
             }
-            Lines.Add(polyline);
+            lines.Add(polyline);
             graphs.Add(graph);
-            this.Children.Add(polyline);
+            Children.Add(polyline);
 
         }
         public void RemoveGraph(Graph graph)
         {
-            var toRemoveIndex = graphs.IndexOf(graph);
+            int toRemoveIndex = graphs.IndexOf(graph);
             graphs.RemoveAt(toRemoveIndex);
-            this.Children.Remove(Lines[toRemoveIndex]);
-            Lines.RemoveAt(toRemoveIndex);
+            Children.Remove(lines[toRemoveIndex]);
+            lines.RemoveAt(toRemoveIndex);
 
         }
         public void HideGraph(Graph graph)
         {
-            var toHideIndex = graphs.IndexOf(graph);
-            this.Children.Remove(Lines[toHideIndex]);
+            int toHideIndex = graphs.IndexOf(graph);
+            Children.Remove(lines[toHideIndex]);
         }
         public void ShowGraph(Graph graph)
         {
-            var toShowIndex = graphs.IndexOf(graph);
-            this.Children.Add(Lines[toShowIndex]);
+            int toShowIndex = graphs.IndexOf(graph);
+            Children.Add(lines[toShowIndex]);
             try
             {
-                foreach (var item in intersections)
+                foreach (Border item in intersections)
                 {
                     Children.Add(item);
                 }
@@ -166,7 +185,7 @@ namespace CourseWorkGraphDrawer
         public void ShowIntersections(Graph graph)
         {
             FindIntersections(graph);
-            foreach (var item in intersections)
+            foreach (Border item in intersections)
             {
                 try
                 {
@@ -177,7 +196,7 @@ namespace CourseWorkGraphDrawer
         }
         public void HideIntersections()
         {
-            foreach (var item in intersections)
+            foreach (Border item in intersections)
             {
                 try
                 {
@@ -195,10 +214,16 @@ namespace CourseWorkGraphDrawer
             List<Border> intersectionPoints = new List<Border>();
             List<Point> intersectionPointsOrigin = new List<Point>();
 
-            foreach (var item in graphs)
+            Polyline plToFocus = lines[graphs.IndexOf(graph)];
+            plToFocus.Focus();
+
+            foreach (Graph item in graphs)
             {
                 if (item.Equals(graph))
+                {
                     continue;
+                }
+
                 for (int i = 0; i < graph.Points.Count - 1; i++)
                 {
                     for (int j = 0; j < item.Points.Count - 1; j++)
@@ -210,10 +235,14 @@ namespace CourseWorkGraphDrawer
                         item.Points[j].X, item.Points[j].Y,
                         item.Points[j + 1].X, item.Points[j + 1].Y);
                         if (intersectionPoint == default)
+                        {
                             continue;
+                        }
+
                         Border border = new Border();
                         int radius = 10;
                         border.CornerRadius = new CornerRadius(radius / 2);
+
 
                         border.Width = radius;
                         border.Height = radius;
@@ -255,7 +284,10 @@ namespace CourseWorkGraphDrawer
                 (y3 * x4))) /
                 (((x1 - x2) * (y3 - y4)) - ((y1 - y2) * (x3 - x4)));
             if (double.IsInfinity(x) || double.IsInfinity(y))
+            {
                 return default;
+            }
+
             if ((
                 (((x1 <= x && x <= x2) || (x1 >= x && x >= x2)) && ((x3 <= x && x <= x4) || (x3 >= x && x >= x4)))
                 ||
@@ -285,7 +317,23 @@ namespace CourseWorkGraphDrawer
         }
         private void OnBackgroundColorChanged()
         {
-            this.Background = Settings.BackgroundBrush;
+            Background = Settings.BackgroundBrush;
+        }
+        private void OnGridColorChanged()
+        {
+            foreach (Line item in coordinatesGrid)
+            {
+                item.Stroke = Settings.GridBrush;
+            }
+        }
+
+        private void OnPolylineGotFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as Polyline).StrokeThickness *= 1.5;
+        }
+        private void OnPolylineLostFocus(object sender, RoutedEventArgs e)
+        {
+            (sender as Polyline).StrokeThickness /= 1.5;
         }
     }
 }

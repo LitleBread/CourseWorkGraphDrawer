@@ -8,28 +8,45 @@ namespace CourseWorkGraphDrawer
 {
     class Graph
     {
-        public string Function { get; private set; }
+        public string Function { 
+            get 
+            { return function; }
+            set 
+            {
+                function = value;
+                try
+                {
+                    Calculate();
+                }
+                catch { }
+            }
+        }
         public string CoordinateSystem { get; private set; }
         public List<Point> Points { get; private set; } = new List<Point>();
+        private string function;
+        private bool isDecart;
+        private double min, max, step;
 
-        public Graph(string funcString, bool isDecart, string sMin, string sMax, string sStep)
+        public Graph(string funcString, bool isDecart, double min, double max, double step)
         {
-            double.TryParse(sMin.Replace(".", ","), out double min);
-            double.TryParse(sMax.Replace(".", ","), out double max);
-            double.TryParse(sStep.Replace(".", ","), out double step);
+            this.min = min;
+            this.max = max;
+            this.step = step;
+            this.isDecart = isDecart;
 
             if (step <= 0)
             {
                 step = 1e-5;
             }
-
-
             this.Function = funcString;
-            Func<double, double> func = Compiler.GetDelegate(Parser.Parse(funcString));
-            Points = new List<Point>();
             CoordinateSystem = isDecart ? "Декартовая" : "Полярная";
+            
+        }
 
-
+        private void Calculate()
+        {
+            Func<double, double> func = Compiler.GetDelegate(Parser.Parse(function));
+            Points = new List<Point>();
             double yTemp;
             if (!isDecart)
             {

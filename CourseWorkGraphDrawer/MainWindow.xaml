@@ -182,18 +182,18 @@
                         <TextBlock Text="Функция :"/>
                         <Button x:Name="infoButton" Content="?" HorizontalAlignment="Right" Width="25" Height="25" Margin="250 2" FontWeight="Bold" Click="OnInfoButtonClick"/>
                     </StackPanel>
-                    <TextBox x:Name="GraphEnterTBox" Margin="15 10" Height="25" TextChanged="OnTextChanged" />
+                    <TextBox x:Name="FunctionTextBox" Margin="15 10" Height="25" TextChanged="OnTextChanged" TextInput="OnFunctionPreviewInput" PreviewTextInput="OnFunctionPreviewInput" KeyDown="OnFunctionTextBoxKeyDown" />
 
                     <Button x:Name="DrawButton" Content="Нарисовать" Margin="15 5" Height="30" Width="250"  Click="OnDrawButtonClick"/>
 
 
                     <StackPanel Orientation="Horizontal" >
                         <TextBlock Text="От"  VerticalAlignment="Center"/>
-                        <TextBox   Text="-10" x:Name="minVal" Margin="5" Width="50" Height="30"  Style="{StaticResource StrechingTextBlock}" KeyDown="OnMinValKeyDown"/>
+                        <TextBox   Text="-10" x:Name="minVal" Margin="5" Width="50" Height="30"  Style="{StaticResource StrechingTextBlock}" KeyDown="OnMinValKeyDown" PreviewTextInput="OnRestrictionPreviewInput"/>
                         <TextBlock Text="До"  VerticalAlignment="Center"/>
-                        <TextBox   Text="10" x:Name="maxVal" Margin="5" Width="50" Height="30" Style="{StaticResource StrechingTextBlock}" KeyDown="OnMaxValKeyDown"/>
+                        <TextBox   Text="10" x:Name="maxVal" Margin="5" Width="50" Height="30" Style="{StaticResource StrechingTextBlock}" KeyDown="OnMaxValKeyDown" PreviewTextInput="OnRestrictionPreviewInput"/>
                         <TextBlock Text="Шаг"  VerticalAlignment="Center"/>
-                        <TextBox   Text="0.1" x:Name="step" Margin="5" Width="50" Height="30" Style="{StaticResource StrechingTextBlock}" KeyDown="OnStepKeyDown"/>
+                        <TextBox   Text="0.1" x:Name="stepVal" Margin="5" Width="50" Height="30" Style="{StaticResource StrechingTextBlock}" KeyDown="OnStepKeyDown" PreviewTextInput="OnRestrictionPreviewInput"/>
                     </StackPanel>
                     <StackPanel>
                         <RadioButton x:Name="Polar" Content="Полярная система координат (градусы)"/>
@@ -226,7 +226,7 @@
                             <StackPanel Orientation="Horizontal" Height="25">
                                 <Border BorderBrush="Black" BorderThickness="0.2" Background="{Binding Path=Value.Brush}" Width="25" CornerRadius="14" Margin="8 0"/>
                                 <CheckBox IsChecked="{Binding Path=Value.ToShow}" Margin="5" Checked="OnGraphToShowCheckBoxCheckChanges" Unchecked="OnGraphToShowCheckBoxCheckChanges"/>
-                                <TextBlock Margin="15 0" Text="{Binding Path=Key.Function}" FontSize="16"/>
+                                <TextBox Margin="15 0" Text="{Binding Path=Key.Function}" FontSize="16" KeyDown="OnGraphTextBoxKeyDown"/>
                                 <TextBlock Margin="15 0" Text="{Binding Path=Key.CoordinateSystem}" FontSize="16"/>
                             </StackPanel>
                         </DataTemplate>

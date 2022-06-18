@@ -10,32 +10,42 @@ namespace CourseWorkGraphDrawer
     {
         public static Color BackgroundColor
         {
-            get { return _backgroundColor; }
+            get { return backgroundColor; }
             set
             {
-                _backgroundColor = value;
+                backgroundColor = value;
                 BackgroundBrush = new SolidColorBrush(value);
                 BackgroundColorChanged?.Invoke();
             }
         }
         public static Color AxisColor
         {
-            get { return _axisColor; }
+            get { return axisColor; }
             set
             {
-                _axisColor = value;
+                axisColor = value;
                 AxisBrush = new SolidColorBrush(value);
                 AxisColorChanged?.Invoke();
             }
         }
         public static Color IntersectionsdColor
         {
-            get { return _intersectionsColor; }
+            get { return intersectionsColor; }
             set
             {
-                _intersectionsColor = value;
+                intersectionsColor = value;
                 IntersectionsBrush = new SolidColorBrush(value);
                 IntersectionsColorChanged?.Invoke();
+            }
+        }
+        public static Color GridColor
+        {
+            get { return gridColor; }
+            set
+            {
+                gridColor = value;
+                GridBrush = new SolidColorBrush(value);
+                GridColorChanged?.Invoke();
             }
         }
         public delegate void ParameterChanged();
@@ -43,14 +53,17 @@ namespace CourseWorkGraphDrawer
         public static event ParameterChanged BackgroundColorChanged;
         public static event ParameterChanged AxisColorChanged;
         public static event ParameterChanged IntersectionsColorChanged;
+        public static event ParameterChanged GridColorChanged;
 
 
         public static Brush AxisBrush { get; private set; } = Brushes.Black;
         public static Brush IntersectionsBrush { get; private set; } = Brushes.Red;
         public static Brush BackgroundBrush { get; private set; } = Brushes.AntiqueWhite;
+        public static Brush GridBrush { get; private set; } = new SolidColorBrush(Color.FromArgb(155, 77, 77, 77));
 
-        private static Color _backgroundColor;
-        private static Color _axisColor;
-        private static Color _intersectionsColor;
+        private static Color backgroundColor;
+        private static Color axisColor;
+        private static Color intersectionsColor;
+        private static Color gridColor;
     }
 }

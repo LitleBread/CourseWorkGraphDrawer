@@ -13,6 +13,8 @@
             <TextBlock Text="Цвет заднего фона"/>
             <TextBlock Text="Цвет осей"/>
             <TextBlock Text="Цвет пересечений"/>
+            <TextBlock Text="Цвет координатной сетки"/>
+            
         </ComboBox>
         <TextBlock Text="Цвет" Margin="10" TextAlignment="Center"/>
         <xctk1:ColorPicker x:Name="ColorPicker" 

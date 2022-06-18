@@ -37,6 +37,12 @@ namespace CourseWorkGraphDrawer
                 case 2:
                     Settings.IntersectionsdColor = (Color)ColorPicker.SelectedColor;
                     break;
+                case 3:
+                    Settings.GridColor = (Color)ColorPicker.SelectedColor;
+                    break;
+                default:
+                    MessageBox.Show("Не выбран элемент для изменения");
+                    break;
             }
             MessageBox.Show("Changed");
             this.Close();

@@ -36,8 +36,8 @@ namespace CourseWorkGraphDrawer
             operationOrder.Add("*", 1);
             operationOrder.Add("/", 1);
             operationOrder.Add("^", 2);
-            operationOrder.Add("Math.Abs", 2);
-            operationOrder.Add("Math.Sqrt", 2);
+            operationOrder.Add("Math.Abs", 3);
+            operationOrder.Add("Math.Sqrt", 3);
             operationOrder.Add("Math.Sin", 3);
             operationOrder.Add("Math.Cos", 3);
             operationOrder.Add("Math.Tan", 3);
@@ -107,10 +107,10 @@ namespace CourseWorkGraphDrawer
                     }
                     operation = operation.Replace("sqrt", "Math.Sqrt");
                     operation = operation.Replace("abs", "Math.Abs");
-                    operation = operation.Replace("exp", "Math.Exp");
+                   
                     operation = operation.Replace("log", "Math.Log");
                     operation = operation.Replace("lg", "Math.Log10");
-                    operation = operation.Replace("random", "random.Next");
+                    
 
                     TryPushOperation(operation);
                     operation = "";
