@@ -9,7 +9,7 @@ namespace CourseWorkGraphDrawer
 {
     public static class Parser
     {
-        static Dictionary<string, int> operationOrder = new Dictionary<string, int>();
+        static Dictionary<string, int> operationPrioriry = new Dictionary<string, int>();
         static string[] unarOperations = {
             "Math.Abs",
             "Math.Sqrt",
@@ -27,31 +27,30 @@ namespace CourseWorkGraphDrawer
         };
         static Stack<string> numbers = new Stack<string>();
         static Stack<string> operations = new Stack<string>();
+        static int breaketsCount = 0;
 
         static Parser()
         {
 
-            operationOrder.Add("+", 0);
-            operationOrder.Add("-", 0);
-            operationOrder.Add("*", 1);
-            operationOrder.Add("/", 1);
-            operationOrder.Add("^", 2);
-            operationOrder.Add("Math.Abs", 3);
-            operationOrder.Add("Math.Sqrt", 3);
-            operationOrder.Add("Math.Sin", 3);
-            operationOrder.Add("Math.Cos", 3);
-            operationOrder.Add("Math.Tan", 3);
-            operationOrder.Add("Math.Asin", 3);
-            operationOrder.Add("Math.Acos", 3);
-            operationOrder.Add("Math.Atan", 3);
-            operationOrder.Add("Math.Log", 3);
-            operationOrder.Add("Math.Log10", 3);
-            operationOrder.Add("Math.Cosh", 3);
-            operationOrder.Add("Math.Sinh", 3);
-            operationOrder.Add("Math.Tanh", 3);
+            operationPrioriry.Add("+", 0);
+            operationPrioriry.Add("-", 0);
+            operationPrioriry.Add("*", 1);
+            operationPrioriry.Add("/", 1);
+            operationPrioriry.Add("^", 2);
+            operationPrioriry.Add("Math.Abs", 3);
+            operationPrioriry.Add("Math.Sqrt", 3);
+            operationPrioriry.Add("Math.Sin", 3);
+            operationPrioriry.Add("Math.Cos", 3);
+            operationPrioriry.Add("Math.Tan", 3);
+            operationPrioriry.Add("Math.Asin", 3);
+            operationPrioriry.Add("Math.Acos", 3);
+            operationPrioriry.Add("Math.Atan", 3);
+            operationPrioriry.Add("Math.Log", 3);
+            operationPrioriry.Add("Math.Log10", 3);
+            operationPrioriry.Add("Math.Cosh", 3);
+            operationPrioriry.Add("Math.Sinh", 3);
+            operationPrioriry.Add("Math.Tanh", 3);
         }
-
-
         public static string Parse(string origin)
         {
             char[] parseArray;
@@ -67,7 +66,7 @@ namespace CourseWorkGraphDrawer
             for (int i = 0; i < parseArray.Length; i++)
             {
                 char p = parseArray[i];
-                if ((p >= '0' && p <= '9' || p == '.') || p == 'e' || p == 'x' || p == 'p')
+                if (p >= '0' && p <= '9' || p == '.' || p == 'e' || p == 'x' || p == 'p')
                 {
                     num += p;
                     if (i == parseArray.Length - 1)
@@ -138,14 +137,17 @@ namespace CourseWorkGraphDrawer
                 }
                 DoOperation(operations.Pop());
             }
-
+            if(breaketsCount > 0)
+            {
+                throw new ParserException("Слишком много открывающих скобок");
+            }
             return numbers.Pop();
         }
 
-
-        static int breaketsCount = 0;
-        private static void TryPushOperation(string currentOperation)
+        private static bool TryPushOperation(string currentOperation)
         {
+            if (currentOperation == ")" && breaketsCount == 0)
+                throw new ParserException("Слишком много закрывающих скобок");
             if (currentOperation == ")" && breaketsCount > 0)
             {
                 if (operations.Peek() == "(")
@@ -170,8 +172,8 @@ namespace CourseWorkGraphDrawer
                 {
                     if (currentOperation != ")")
                     {
-                        int currentPrioriry = operationOrder[currentOperation];
-                        int previousPrioriry = operationOrder[operations.Peek()];
+                        int currentPrioriry = operationPrioriry[currentOperation];
+                        int previousPrioriry = operationPrioriry[operations.Peek()];
                         if (currentPrioriry >= previousPrioriry)
                         {
                             operations.Push(currentOperation);
@@ -196,7 +198,7 @@ namespace CourseWorkGraphDrawer
             {
                 operations.Push(currentOperation);
             }
-
+            return true;
         }
 
         private static void DoOperation(string operation)
@@ -220,5 +222,11 @@ namespace CourseWorkGraphDrawer
             }
             numbers.Push(res);
         }
+    }
+
+
+    public class ParserException : Exception
+    {
+        public ParserException(string message) : base(message) { }
     }
 }

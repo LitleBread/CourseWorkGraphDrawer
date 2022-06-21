@@ -14,11 +14,7 @@ namespace CourseWorkGraphDrawer
             set 
             {
                 function = value;
-                try
-                {
-                    Calculate();
-                }
-                catch { }
+                Calculate();
             }
         }
         public string CoordinateSystem { get; private set; }
@@ -45,7 +41,7 @@ namespace CourseWorkGraphDrawer
 
         private void Calculate()
         {
-            Func<double, double> func = Compiler.GetDelegate(Parser.Parse(function));
+            Func<double, double> func = Compiler.GetDelegate(function);
             Points = new List<Point>();
             double yTemp;
             if (!isDecart)

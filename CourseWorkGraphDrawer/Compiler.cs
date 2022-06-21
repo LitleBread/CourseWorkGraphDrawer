@@ -21,6 +21,7 @@ class Executor
 
         public static Func<double, double> GetDelegate(string code)
         {
+            code = Parser.Parse(code);
             CompilerParameters options = new CompilerParameters
             {
                 GenerateInMemory = true

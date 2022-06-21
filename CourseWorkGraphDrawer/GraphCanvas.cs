@@ -7,16 +7,17 @@ namespace CourseWorkGraphDrawer
 {
     internal class GraphCanvas : Canvas
     {
-        private readonly List<Polyline> lines;
-        private readonly List<Graph> graphs;
-        private readonly TextBlock[,] coordinates;
-        private readonly Line[,] coordinatesGrid;
+        private List<Polyline> lines;
+        private List<Graph> graphs;
 
-        private readonly List<Border> intersections;
-        private readonly List<Point> intersectionsOrigin;
+        private TextBlock[,] coordinates;
+        private Line[,] coordinatesGrid;
 
-        private readonly Line xAxis;
-        private readonly Line yAxis;
+        private List<Border> intersections;
+        private List<Point> intersectionsOrigin;
+
+        private Line xAxis;
+        private Line yAxis;
 
         public GraphCanvas()
         {
@@ -24,6 +25,7 @@ namespace CourseWorkGraphDrawer
             graphs = new List<Graph>();
             intersections = new List<Border>();
             intersectionsOrigin = new List<Point>();
+            
             int gridSize = 150;
             coordinates = new TextBlock[2, gridSize];
             coordinatesGrid = new Line[2, gridSize];
@@ -60,22 +62,19 @@ namespace CourseWorkGraphDrawer
             Settings.GridColorChanged += OnGridColorChanged;
 
         }
-        public void SetAxis(Point zero)
-        {
-            xAxis.X1 = zero.X < 0 || zero.X > 1000 ? -1 : zero.X - 4000;
-            xAxis.X2 = zero.X < 0 || zero.X > 1000 ? 10000 : zero.X + 4000;
-            xAxis.Y1 = zero.Y;
-            xAxis.Y2 = zero.Y;
-            yAxis.Y1 = zero.Y < 0 || zero.Y > 1000 ? -1 : zero.Y - 4000;
-            yAxis.Y2 = zero.Y < 0 || zero.Y > 1000 ? 10000 : zero.Y + 4000;
-            yAxis.X1 = zero.X;
-            yAxis.X2 = zero.X;
-
-
-        }
+        
         public void CalculatePointsPositions(Point zero, double scaleFactor)
         {
-
+            //подсчет новых позиций осей
+            xAxis.X1 = -1;
+            xAxis.X2 = ActualWidth;
+            xAxis.Y1 = zero.Y;
+            xAxis.Y2 = zero.Y;
+            yAxis.Y1 = -1;
+            yAxis.Y2 = ActualHeight;
+            yAxis.X1 = zero.X;
+            yAxis.X2 = zero.X;
+            //новые экранные координаты точек графиков
             for (int i = 0; i < lines.Count; i++)
             {
                 for (int j = 0; j < lines[i].Points.Count; j++)
@@ -85,8 +84,8 @@ namespace CourseWorkGraphDrawer
 
                     lines[i].Points[j] = new Point(newX, newY);
                 }
-
             }
+            //если показаны пересечения, то подсчет новых экранных позиций пересечений
             if (intersections.Count > 0)
             {
                 for (int i = 0; i < intersections.Count; i++)
@@ -95,6 +94,7 @@ namespace CourseWorkGraphDrawer
                     intersections[i].SetValue(Canvas.TopProperty, intersectionsOrigin[i].Y * scaleFactor + zero.Y - 5);
                 }
             }
+            //пересчет экранных позиций сетки (отдельно по х и у)
             for (int x = 0; x < coordinates.GetLength(1); x++)
             {
                 double yPos = zero.Y > 0 ? zero.Y - 25 : 15;

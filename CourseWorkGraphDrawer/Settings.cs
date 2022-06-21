@@ -48,6 +48,7 @@ namespace CourseWorkGraphDrawer
                 GridColorChanged?.Invoke();
             }
         }
+
         public delegate void ParameterChanged();
 
         public static event ParameterChanged BackgroundColorChanged;
