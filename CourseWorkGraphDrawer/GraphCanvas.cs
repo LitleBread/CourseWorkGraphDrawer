@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Shapes;
@@ -7,28 +8,32 @@ namespace CourseWorkGraphDrawer
 {
     internal class GraphCanvas : Canvas
     {
-        private List<Polyline> lines;
-        private List<Graph> graphs;
+        private Dictionary<Graph, Polyline> graphMap;
 
         private TextBlock[,] coordinates;
         private Line[,] coordinatesGrid;
 
-        private List<Border> intersections;
-        private List<Point> intersectionsOrigin;
+        
+        private Dictionary<Graph, List<Border>> foundIntersections;
+        private Dictionary<Graph, List<Point>> foundIntersectionsOrigins;
 
         private Line xAxis;
         private Line yAxis;
 
+        
+
         public GraphCanvas()
         {
-            lines = new List<Polyline>();
-            graphs = new List<Graph>();
-            intersections = new List<Border>();
-            intersectionsOrigin = new List<Point>();
+            graphMap = new Dictionary<Graph, Polyline>();
             
-            int gridSize = 150;
+            foundIntersections = new Dictionary<Graph, List<Border>>();
+            foundIntersectionsOrigins = new Dictionary<Graph, List<Point>>();
+            
+            int gridSize = 200;
+
             coordinates = new TextBlock[2, gridSize];
             coordinatesGrid = new Line[2, gridSize];
+
             for (int i = 0; i < coordinates.GetLength(0); i++)
             {
                 for (int j = 0; j < coordinates.GetLength(1); j++)
@@ -75,25 +80,28 @@ namespace CourseWorkGraphDrawer
             yAxis.X1 = zero.X;
             yAxis.X2 = zero.X;
             //новые экранные координаты точек графиков
-            for (int i = 0; i < lines.Count; i++)
+            foreach (var item in graphMap)
             {
-                for (int j = 0; j < lines[i].Points.Count; j++)
+                for (int i = 0; i < item.Value.Points.Count; i++)
                 {
-                    double newX = graphs[i].Points[j].X * scaleFactor + zero.X;
-                    double newY = graphs[i].Points[j].Y * scaleFactor + zero.Y;
+                    double newX = item.Key.Points[i].X * scaleFactor + zero.X;
+                    double newY = item.Key.Points[i].Y * scaleFactor + zero.Y;
+                    item.Value.Points[i] = new Point(newX, newY);
+                }
+            }
+            //подсчет новых экранных позиций пересечений
 
-                    lines[i].Points[j] = new Point(newX, newY);
-                }
-            }
-            //если показаны пересечения, то подсчет новых экранных позиций пересечений
-            if (intersections.Count > 0)
+            foreach (var item in foundIntersections)
             {
-                for (int i = 0; i < intersections.Count; i++)
+                int i = 0;
+                foreach (Border itemBorder in item.Value)
                 {
-                    intersections[i].SetValue(Canvas.LeftProperty, intersectionsOrigin[i].X * scaleFactor + zero.X - 5);
-                    intersections[i].SetValue(Canvas.TopProperty, intersectionsOrigin[i].Y * scaleFactor + zero.Y - 5);
+                    itemBorder.SetValue(Canvas.LeftProperty, foundIntersectionsOrigins[item.Key][i].X * scaleFactor + zero.X - 5);
+                    itemBorder.SetValue(Canvas.TopProperty, foundIntersectionsOrigins[item.Key][i].Y * scaleFactor + zero.Y - 5);
+                    i++;
                 }
             }
+            
             //пересчет экранных позиций сетки (отдельно по х и у)
             for (int x = 0; x < coordinates.GetLength(1); x++)
             {
@@ -103,15 +111,15 @@ namespace CourseWorkGraphDrawer
                 coordinates[0, x].SetValue(Canvas.TopProperty, yPos);
 
 
-                double xPos = zero.X + (x < coordinates.GetLength(1) / 2 ? -1 : 1) *
-                    (x < coordinates.GetLength(1) / 2 ? x : x - coordinates.GetLength(1) / 2) * scaleFactor - 5;
+                double xPos = zero.X + GetScreenPosition(zero, scaleFactor, x);
                 coordinates[0, x].SetValue(Canvas.LeftProperty, xPos);
                 coordinatesGrid[0, x].X1 = xPos + 5;
                 coordinatesGrid[0, x].X2 = xPos + 5;
                 coordinatesGrid[0, x].Y1 = 0;
                 coordinatesGrid[0, x].Y2 = ActualHeight;
 
-                Point position = new Point((double)coordinates[0, x].GetValue(Canvas.LeftProperty) / -scaleFactor + zero.X / scaleFactor - 5 / scaleFactor, (double)coordinates[0, x].GetValue(Canvas.TopProperty) / (-scaleFactor) + zero.Y / scaleFactor);
+                Point position = GetMathPosition(zero, (double)coordinates[0, x].GetValue(Canvas.LeftProperty), (double)coordinates[0, x].GetValue(Canvas.TopProperty), scaleFactor);
+
                 coordinates[0, x].Text = string.Format("{0:N0}", -position.X);
             }
             for (int y = 0; y < coordinates.GetLength(1); y++)
@@ -122,8 +130,7 @@ namespace CourseWorkGraphDrawer
                 coordinates[1, y].SetValue(Canvas.LeftProperty, xPos);
 
 
-                double yPos = zero.Y + ((y < coordinates.GetLength(1) / 2) ? -1 : 1) *
-                    ((y < coordinates.GetLength(1) / 2) ? y : y - coordinates.GetLength(1) / 2) * scaleFactor - 5;
+                double yPos = zero.Y + GetScreenPosition(zero, scaleFactor, y);
                 coordinates[1, y].SetValue(Canvas.TopProperty, yPos);
                 coordinatesGrid[1, y].X1 = 0;
                 coordinatesGrid[1, y].X2 = ActualWidth;
@@ -131,12 +138,15 @@ namespace CourseWorkGraphDrawer
                 coordinatesGrid[1, y].Y2 = yPos + 5;
 
 
-                Point position = new Point((double)coordinates[1, y].GetValue(Canvas.LeftProperty) / scaleFactor + zero.X / scaleFactor, (double)coordinates[1, y].GetValue(Canvas.TopProperty) / (-scaleFactor) + zero.Y / scaleFactor - 5 / scaleFactor);
+                Point position = GetMathPosition(zero, (double)coordinates[1, y].GetValue(Canvas.LeftProperty), (double)coordinates[1, y].GetValue(Canvas.TopProperty), scaleFactor);
                 coordinates[1, y].Text = string.Format("{0:N0}", position.Y);
             }
         }
+
         public void AddGraph(Graph graph, Style style)
         {
+            foundIntersections.Clear();
+            foundIntersectionsOrigins.Clear();
             Polyline polyline = new Polyline
             {
                 Stroke = style.Brush,
@@ -151,41 +161,57 @@ namespace CourseWorkGraphDrawer
             {
                 polyline.Points.Add(new Point(item.X , item.Y));
             }
-            lines.Add(polyline);
-            graphs.Add(graph);
+            graphMap.Add(graph, polyline);
+            
             Children.Add(polyline);
 
         }
         public void RemoveGraph(Graph graph)
         {
-            int toRemoveIndex = graphs.IndexOf(graph);
-            graphs.RemoveAt(toRemoveIndex);
-            Children.Remove(lines[toRemoveIndex]);
-            lines.RemoveAt(toRemoveIndex);
+            Children.Remove(graphMap[graph]);
+            graphMap.Remove(graph);
 
         }
+
         public void HideGraph(Graph graph)
         {
-            int toHideIndex = graphs.IndexOf(graph);
-            Children.Remove(lines[toHideIndex]);
+            if (foundIntersections.ContainsKey(graph))
+            {
+                HideIntersections(graph);
+            }
+            Children.Remove(graphMap[graph]);
         }
         public void ShowGraph(Graph graph)
         {
-            int toShowIndex = graphs.IndexOf(graph);
-            Children.Add(lines[toShowIndex]);
+            
+            Children.Add(graphMap[graph]);
             try
             {
-                foreach (Border item in intersections)
+                foreach (Border item in foundIntersections[graph])
                 {
                     Children.Add(item);
                 }
             }
             catch { }
         }
+
         public void ShowIntersections(Graph graph)
         {
+            if (foundIntersections.ContainsKey(graph))
+            {
+                foreach (var item in foundIntersections[graph])
+                {
+                    try
+                    {
+                        Children.Add(item);
+                    }
+                    catch { }
+                }
+                graphMap[graph].Focus();
+                return;
+            }
             FindIntersections(graph);
-            foreach (Border item in intersections)
+            foreach (Border item in foundIntersections[graph])
             {
                 try
                 {
@@ -196,44 +222,76 @@ namespace CourseWorkGraphDrawer
         }
         public void HideIntersections()
         {
-            foreach (Border item in intersections)
+            foreach (var item in foundIntersections)
+            {
+                foreach (Border itemBorder in item.Value)
+                {
+                    try
+                    {
+                        Children.Remove(itemBorder);
+                    }
+                    catch { }
+                }
+            }
+            
+        }
+        public void HideIntersections(Graph graph)
+        {
+
+            foreach (Border itemBorder in foundIntersections[graph])
             {
                 try
                 {
-                    Children.Remove(item);
+                    Children.Remove(itemBorder);
                 }
-                catch
-                { }
+                catch { }
             }
-            intersections.Clear();
-            intersectionsOrigin.Clear();
+
+
         }
+
+        private double GetScreenPosition(Point zero, double scaleFactor, int arrayPosition)
+        {
+            int centerPosition = coordinates.GetLength(1) / 2;
+            double res = (arrayPosition < centerPosition ? -1 : 1) * (arrayPosition < centerPosition ? arrayPosition : arrayPosition - centerPosition) * scaleFactor - 5;
+            return res;
+        }
+
+        private Point GetMathPosition(Point zero, double xOffset, double yOffset, double scaleFactor)
+        {
+
+
+            double x = xOffset / (-scaleFactor) + (zero.X - 5) / scaleFactor;
+            double y = yOffset / (-scaleFactor) + (zero.Y - 5) / scaleFactor;
+            return new Point(x, y);
+        }
+
         private void FindIntersections(Graph graph)
         {
 
-            List<Border> intersectionPoints = new List<Border>();
-            List<Point> intersectionPointsOrigin = new List<Point>();
+            List<Border> intersectionBorders = new List<Border>();
+            List<Point> intersectionPoints = new List<Point>();
 
-            Polyline plToFocus = lines[graphs.IndexOf(graph)];
+            Polyline plToFocus = graphMap[graph];
             plToFocus.Focus();
 
-            foreach (Graph item in graphs)
+            foreach (KeyValuePair<Graph, Polyline> item in graphMap)
             {
-                if (item.Equals(graph))
+                if (item.Key.Equals(graph))
                 {
                     continue;
                 }
 
                 for (int i = 0; i < graph.Points.Count - 1; i++)
                 {
-                    for (int j = 0; j < item.Points.Count - 1; j++)
+                    for (int j = 0; j < item.Key.Points.Count - 1; j++)
                     {
 
                         Point intersectionPoint = GetIntersectionPoint(
                         graph.Points[i].X, graph.Points[i].Y,
                         graph.Points[i + 1].X, graph.Points[i + 1].Y,
-                        item.Points[j].X, item.Points[j].Y,
-                        item.Points[j + 1].X, item.Points[j + 1].Y);
+                        item.Key.Points[j].X, item.Key.Points[j].Y,
+                        item.Key.Points[j + 1].X, item.Key.Points[j + 1].Y);
                         if (intersectionPoint == default)
                         {
                             continue;
@@ -251,8 +309,8 @@ namespace CourseWorkGraphDrawer
                         border.SetValue(Canvas.ZIndexProperty, 1);
                         border.Background = Settings.IntersectionsBrush;
 
-                        intersectionPoints.Add(border);
-                        intersectionPointsOrigin.Add(intersectionPoint);
+                        intersectionBorders.Add(border);
+                        intersectionPoints.Add(intersectionPoint);
 
                     }
                 }
@@ -261,10 +319,10 @@ namespace CourseWorkGraphDrawer
 
 
 
-            if (intersectionPoints.Count > 0)
+            if (intersectionBorders.Count > 0)
             {
-                intersections.AddRange(intersectionPoints);
-                intersectionsOrigin.AddRange(intersectionPointsOrigin);
+                foundIntersections.Add(graph, intersectionBorders);
+                foundIntersectionsOrigins.Add(graph, intersectionPoints);
             }
 
         }
@@ -304,9 +362,12 @@ namespace CourseWorkGraphDrawer
 
         private void OnIntersectionsColorChanged()
         {
-            foreach (Border item in intersections)
+            foreach (var item in foundIntersections)
             {
-                item.Background = Settings.IntersectionsBrush;
+                foreach (Border intersection in item.Value)
+                {
+                    intersection.Background = Settings.IntersectionsBrush;
+                }
             }
         }
         private void OnAxisColorChanged()

@@ -7,7 +7,7 @@
         xmlns:xctk1="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Language="ru"
-        Title="GraphDrawer" Height="600" Width="1200" Loaded="OnMWindowLoaded">
+        Title="GraphDrawer" Height="600" Width="1200" Loaded="OnMWindowLoaded" SizeChanged="OnMWindowSizeChanged">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="FontSize" Value="16"/>
@@ -180,6 +180,7 @@
                            />
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Функция :"/>
+                        <TextBlock x:Name="scaleFactorTextBlock"/>
                         <Button x:Name="infoButton" Content="?" HorizontalAlignment="Right" Width="25" Height="25" Margin="250 2" FontWeight="Bold" Click="OnInfoButtonClick"/>
                     </StackPanel>
                     <TextBox x:Name="FunctionTextBox" Margin="15 10" Height="25" TextChanged="OnTextChanged" TextInput="OnFunctionPreviewInput" PreviewTextInput="OnFunctionPreviewInput" KeyDown="OnFunctionTextBoxKeyDown" />

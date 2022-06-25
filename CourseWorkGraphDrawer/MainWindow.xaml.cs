@@ -78,11 +78,15 @@ namespace CourseWorkGraphDrawer
             Point MousePositionRelativeToGraph = GetPointRelatively(e, sender as IInputElement, zero);
             MousePositionRelativeToGraph.X /= scaleFactor;
             MousePositionRelativeToGraph.Y /= -scaleFactor;
+
             Point mPos = e.GetPosition(sender as IInputElement);
+
             mousePosTextBlock.SetValue(Canvas.LeftProperty, mPos.X - 55);
             mousePosTextBlock.SetValue(Canvas.TopProperty, mPos.Y - 20);
             mousePosTextBlock.Text = string.Format("{0:N4} ; {1:N4}", MousePositionRelativeToGraph.X, MousePositionRelativeToGraph.Y);
+
             (sender as Canvas).Cursor = Cursors.Arrow;
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 (sender as Canvas).Cursor = Cursors.SizeAll;
@@ -113,23 +117,28 @@ namespace CourseWorkGraphDrawer
 
             try
             {
-                double.TryParse(minVal.Text.Replace(".", ","), out double min);
-                double.TryParse(maxVal.Text.Replace(".", ","), out double max);
-                double.TryParse(stepVal.Text.Replace(".", ","), out double step);
+                double.TryParse(minVal.Text, out double min);
+                double.TryParse(maxVal.Text, out double max);
+                double.TryParse(stepVal.Text, out double step);
+
                 Graph graph = new Graph(func, isDec, min, max, step);
+
                 canvas.AddGraph(graph, style);
                 canvas.CalculatePointsPositions(zero, scaleFactor);
+
                 graphStyleCoordination.Add(graph, style);
                 GraphsList.ItemsSource = null;
                 GraphsList.ItemsSource = graphStyleCoordination;
+
                 FunctionTextBox.Text = string.Empty;
             }
             catch(ParserException exc)
             {
                 ErrorMessageTBLock.Text = exc.Message;
             }
-            catch
+            catch (Exception ex)
             {
+                MessageBox.Show(ex.Message);
                 ErrorMessageTBLock.Text = "Неверно введена функция";
             }
         }
@@ -148,6 +157,8 @@ namespace CourseWorkGraphDrawer
         {
             double sf = 1 + e.Delta / 720.0;
             scaleFactor *= sf;
+
+            scaleFactorTextBlock.Text=(100/scaleFactor).ToString();
 
             Point mousePositionInWindowCoordinates = e.GetPosition(sender as IInputElement);
 
@@ -237,6 +248,7 @@ namespace CourseWorkGraphDrawer
         private void OnMWindowLoaded(object sender, RoutedEventArgs e)
         {
             ResetPositions();
+            scaleFactorTextBlock.Text = (100 / scaleFactor).ToString();
         }
         private void OnMinValKeyDown(object sender, KeyEventArgs e)
         {
@@ -315,6 +327,11 @@ sqrt(abs(cos(x))) * cos(300x) + sqrt(abs(x)) - 0.7 - сердечко", "Спр�
         }
 
         private void OnGraphTextChanged(object sender, TextChangedEventArgs e)
+        {
+            canvas.CalculatePointsPositions(zero, scaleFactor);
+        }
+
+        private void OnMWindowSizeChanged(object sender, SizeChangedEventArgs e)
         {
             canvas.CalculatePointsPositions(zero, scaleFactor);
         }

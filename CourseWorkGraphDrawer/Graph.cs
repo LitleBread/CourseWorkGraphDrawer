@@ -56,7 +56,7 @@ namespace CourseWorkGraphDrawer
                     try
                     {
                         yTemp = func(f);
-                        ToDekart(yTemp, f, out x, out y);
+                        ToPolar(yTemp, f, out x, out y);
                         if (Math.Abs(x) > 100000 || Math.Abs(y) > 100000 || double.IsNaN(y))
                             continue;
                         Points.Add(new Point(-x, y));
@@ -86,7 +86,7 @@ namespace CourseWorkGraphDrawer
                 }
             }
         }
-        private void ToDekart(double r, double f, out double x, out double y)
+        private void ToPolar(double r, double f, out double x, out double y)
         {
             x = r * Math.Cos(f);
             y = r * Math.Sin(f);

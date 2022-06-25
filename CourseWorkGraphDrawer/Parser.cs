@@ -11,19 +11,19 @@ namespace CourseWorkGraphDrawer
     {
         static Dictionary<string, int> operationPrioriry = new Dictionary<string, int>();
         static string[] unarOperations = {
-            "Math.Abs",
-            "Math.Sqrt",
-            "Math.Sin",
-            "Math.Cos",
-            "Math.Tan",
-            "Math.Asin",
-            "Math.Acos",
-            "Math.Atan",
-            "Math.Log",
-            "Math.Log10",
-            "Math.Cosh",
-            "Math.Sinh",
-            "Math.Tanh"
+            "abs",
+            "sqrt",
+            "sin",
+            "cos",
+            "tan",
+            "asin",
+            "acos",
+            "atan",
+            "log",
+            "lg",
+            "cosh",
+            "sinh",
+            "tanh"
         };
         static Stack<string> numbers = new Stack<string>();
         static Stack<string> operations = new Stack<string>();
@@ -37,19 +37,19 @@ namespace CourseWorkGraphDrawer
             operationPrioriry.Add("*", 1);
             operationPrioriry.Add("/", 1);
             operationPrioriry.Add("^", 2);
-            operationPrioriry.Add("Math.Abs", 3);
-            operationPrioriry.Add("Math.Sqrt", 3);
-            operationPrioriry.Add("Math.Sin", 3);
-            operationPrioriry.Add("Math.Cos", 3);
-            operationPrioriry.Add("Math.Tan", 3);
-            operationPrioriry.Add("Math.Asin", 3);
-            operationPrioriry.Add("Math.Acos", 3);
-            operationPrioriry.Add("Math.Atan", 3);
-            operationPrioriry.Add("Math.Log", 3);
-            operationPrioriry.Add("Math.Log10", 3);
-            operationPrioriry.Add("Math.Cosh", 3);
-            operationPrioriry.Add("Math.Sinh", 3);
-            operationPrioriry.Add("Math.Tanh", 3);
+            operationPrioriry.Add("abs", 3);
+            operationPrioriry.Add("sqrt", 3);
+            operationPrioriry.Add("sin", 3);
+            operationPrioriry.Add("cos", 3);
+            operationPrioriry.Add("tan", 3);
+            operationPrioriry.Add("asin", 3);
+            operationPrioriry.Add("acos", 3);
+            operationPrioriry.Add("atan", 3);
+            operationPrioriry.Add("log", 3);
+            operationPrioriry.Add("lg", 3);
+            operationPrioriry.Add("cosh", 3);
+            operationPrioriry.Add("sinh", 3);
+            operationPrioriry.Add("tanh", 3);
         }
         public static string Parse(string origin)
         {
@@ -92,25 +92,6 @@ namespace CourseWorkGraphDrawer
                 }
                 else if (operation != "")
                 {
-                    if (operation.Contains("arcsin") || operation.Contains("arccos") || operation.Contains("arctan"))
-                    {
-                        operation = operation.Replace("arcsin", "Math.Asin");
-                        operation = operation.Replace("arccos", "Math.Acos");
-                        operation = operation.Replace("arctan", "Math.Atan");
-                    }
-                    else
-                    {
-                        operation = operation.Replace("sin", "Math.Sin");
-                        operation = operation.Replace("cos", "Math.Cos");
-                        operation = operation.Replace("tan", "Math.Tan");
-                    }
-                    operation = operation.Replace("sqrt", "Math.Sqrt");
-                    operation = operation.Replace("abs", "Math.Abs");
-                   
-                    operation = operation.Replace("log", "Math.Log");
-                    operation = operation.Replace("lg", "Math.Log10");
-                    
-
                     TryPushOperation(operation);
                     operation = "";
                 }
@@ -204,11 +185,28 @@ namespace CourseWorkGraphDrawer
         private static void DoOperation(string operation)
         {
             string res = "";
+            string csOperation = operation.ToString();
+            if (operation.Contains("arcsin") || operation.Contains("arccos") || operation.Contains("arctan"))
+            {
+                csOperation = csOperation.Replace("arcsin", "Math.Asin");
+                csOperation = csOperation.Replace("arccos", "Math.Acos");
+                csOperation = csOperation.Replace("arctan", "Math.Atan");
+            }
+            else
+            {
+                csOperation = csOperation.Replace("sin", "Math.Sin");
+                csOperation = csOperation.Replace("cos", "Math.Cos");
+                csOperation = csOperation.Replace("tan", "Math.Tan");
+            }
+            csOperation = csOperation.Replace("sqrt", "Math.Sqrt");
+            csOperation = csOperation.Replace("abs", "Math.Abs");
+            csOperation = csOperation.Replace("log", "Math.Log");
+            csOperation = csOperation.Replace("lg", "Math.Log10");
             if (unarOperations.Contains(operation))
             {
-                res = $"{operation}({numbers.Pop()})";
+                res = $"{csOperation}({numbers.Pop()})";
             }
-            else if (operation == "^")
+            else if (csOperation == "^")
             {
                 string num2 = numbers.Pop();
                 string num1 = numbers.Pop();
@@ -218,7 +216,7 @@ namespace CourseWorkGraphDrawer
             {
                 string num2 = numbers.Pop();
                 string num1 = numbers.Pop();
-                res = $"{num1}{operation}{num2}";
+                res = $"{num1}{csOperation}{num2}";
             }
             numbers.Push(res);
         }

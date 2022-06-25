@@ -42,7 +42,7 @@ namespace CourseWorkGraphDrawer
                     MessageBox.Show("Не выбран элемент для изменения");
                     break;
             }
-            MessageBox.Show("Changed");
+            MessageBox.Show("Изменено");
             this.Close();
 
         }
