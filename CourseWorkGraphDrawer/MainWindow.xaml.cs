@@ -35,8 +35,8 @@ namespace CourseWorkGraphDrawer
             mousePosTextBlock.FontSize = 14;
             mousePosTextBlock.SetValue(Canvas.ZIndexProperty, 2);
 
-            resetButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\restart.png"));
-            saveImageButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\saveImage.png"));
+           // resetButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\restart.png"));
+           // saveImageButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\saveImage.png"));
             
 
 
