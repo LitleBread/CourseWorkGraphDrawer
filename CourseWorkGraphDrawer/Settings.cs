@@ -15,7 +15,7 @@ namespace CourseWorkGraphDrawer
             {
                 backgroundColor = value;
                 BackgroundBrush = new SolidColorBrush(value);
-                BackgroundColorChanged?.Invoke();
+                BackgroundColorChanged?.Invoke(BackgroundBrush);
             }
         }
         public static Color AxisColor
@@ -25,7 +25,7 @@ namespace CourseWorkGraphDrawer
             {
                 axisColor = value;
                 AxisBrush = new SolidColorBrush(value);
-                AxisColorChanged?.Invoke();
+                AxisColorChanged?.Invoke(AxisBrush);
             }
         }
         public static Color IntersectionsdColor
@@ -35,7 +35,7 @@ namespace CourseWorkGraphDrawer
             {
                 intersectionsColor = value;
                 IntersectionsBrush = new SolidColorBrush(value);
-                IntersectionsColorChanged?.Invoke();
+                IntersectionsColorChanged?.Invoke(IntersectionsBrush);
             }
         }
         public static Color GridColor
@@ -45,11 +45,11 @@ namespace CourseWorkGraphDrawer
             {
                 gridColor = value;
                 GridBrush = new SolidColorBrush(value);
-                GridColorChanged?.Invoke();
+                GridColorChanged?.Invoke(GridBrush);
             }
         }
 
-        public delegate void ParameterChanged();
+        public delegate void ParameterChanged(Brush e);
 
         public static event ParameterChanged BackgroundColorChanged;
         public static event ParameterChanged AxisColorChanged;

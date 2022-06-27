@@ -16,7 +16,7 @@ namespace CourseWorkGraphDrawer
         private  Dictionary<Graph, Style> graphStyleCoordination { get; set; }
         private double scaleFactor;
         private Point oldMousePosition;
-        private Regex functionRegex = new Regex(@"[^0-9.\-a-zA-Z\(\)\*\^\+\\]");
+        private Regex functionRegex = new Regex(@"[^0-9.\-a-zA-Z\(\)\*\^\+\\\&]");
         private Regex restrictionRegex = new Regex(@"[^0-9\.\-]");
 
         public MainWindow()
@@ -37,6 +37,8 @@ namespace CourseWorkGraphDrawer
 
             resetButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\restart.png"));
             saveImageButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\saveImage.png"));
+            
+
 
             canvas.Children.Add(mousePosTextBlock);
             MainGrid.Children.Add(canvas);
@@ -114,7 +116,7 @@ namespace CourseWorkGraphDrawer
 
             string func = FunctionTextBox.Text;
             bool isDec = (bool)Decart.IsChecked;
-
+            
             try
             {
                 double.TryParse(minVal.Text, out double min);
@@ -136,9 +138,8 @@ namespace CourseWorkGraphDrawer
             {
                 ErrorMessageTBLock.Text = exc.Message;
             }
-            catch (Exception ex)
+            catch
             {
-                MessageBox.Show(ex.Message);
                 ErrorMessageTBLock.Text = "Неверно введена функция";
             }
         }
@@ -158,11 +159,10 @@ namespace CourseWorkGraphDrawer
             double sf = 1 + e.Delta / 720.0;
             scaleFactor *= sf;
 
-            scaleFactorTextBlock.Text=(100/scaleFactor).ToString();
-
             Point mousePositionInWindowCoordinates = e.GetPosition(sender as IInputElement);
 
-            zero = new Point((zero.X - mousePositionInWindowCoordinates.X) * sf + mousePositionInWindowCoordinates.X, (zero.Y - mousePositionInWindowCoordinates.Y) * sf + mousePositionInWindowCoordinates.Y);
+            zero = new Point((zero.X - mousePositionInWindowCoordinates.X) * sf + mousePositionInWindowCoordinates.X, 
+                (zero.Y - mousePositionInWindowCoordinates.Y) * sf + mousePositionInWindowCoordinates.Y);
             canvas.CalculatePointsPositions(zero, scaleFactor);
         }
         private void OnClearGraphListButtonClick(object sender, RoutedEventArgs e)
@@ -231,7 +231,7 @@ namespace CourseWorkGraphDrawer
             if (e.ChangedButton == MouseButton.Left)
             {
 
-                string path = Environment.CurrentDirectory + "\\Images\\" +"image " + DateTime.Now.ToString("yyyy/MM/dd HH/mm/ss") + ".jpeg";
+                string path = Environment.CurrentDirectory +"\\image" + DateTime.Now.ToString("yyyy,MM,ddHH,mm,ss") + ".jpeg";
 
                 using (FileStream fs = new FileStream(path, FileMode.Create))
                 {
@@ -248,7 +248,7 @@ namespace CourseWorkGraphDrawer
         private void OnMWindowLoaded(object sender, RoutedEventArgs e)
         {
             ResetPositions();
-            scaleFactorTextBlock.Text = (100 / scaleFactor).ToString();
+            
         }
         private void OnMinValKeyDown(object sender, KeyEventArgs e)
         {

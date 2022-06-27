@@ -19,7 +19,7 @@ namespace CourseWorkGraphDrawer
             "asin",
             "acos",
             "atan",
-            "log",
+            "ln",
             "lg",
             "cosh",
             "sinh",
@@ -36,17 +36,18 @@ namespace CourseWorkGraphDrawer
             operationPrioriry.Add("-", 0);
             operationPrioriry.Add("*", 1);
             operationPrioriry.Add("/", 1);
-            operationPrioriry.Add("^", 2);
+            operationPrioriry.Add("^", 3);
             operationPrioriry.Add("abs", 3);
             operationPrioriry.Add("sqrt", 3);
-            operationPrioriry.Add("sin", 3);
+            operationPrioriry.Add("sin", 4);
             operationPrioriry.Add("cos", 3);
             operationPrioriry.Add("tan", 3);
             operationPrioriry.Add("asin", 3);
             operationPrioriry.Add("acos", 3);
             operationPrioriry.Add("atan", 3);
-            operationPrioriry.Add("log", 3);
+            operationPrioriry.Add("ln", 3);
             operationPrioriry.Add("lg", 3);
+            operationPrioriry.Add("&", 3);
             operationPrioriry.Add("cosh", 3);
             operationPrioriry.Add("sinh", 3);
             operationPrioriry.Add("tanh", 3);
@@ -95,7 +96,7 @@ namespace CourseWorkGraphDrawer
                     TryPushOperation(operation);
                     operation = "";
                 }
-                if (p == '^' || p == '+' || p == '-' || p == '*' || p == '/' || p == '(' || p == ')')
+                if (p == '^' || p == '&' || p == '+' || p == '-' || p == '*' || p == '/' || p == '(' || p == ')')
                 {
                     operation = p.ToString();
                     TryPushOperation(operation);
@@ -118,10 +119,13 @@ namespace CourseWorkGraphDrawer
                 }
                 DoOperation(operations.Pop());
             }
-            if(breaketsCount > 0)
+            if (breaketsCount > 0)
             {
+                breaketsCount = 0;
                 throw new ParserException("Слишком много открывающих скобок");
+
             }
+            breaketsCount = 0;
             return numbers.Pop();
         }
 
@@ -129,13 +133,33 @@ namespace CourseWorkGraphDrawer
         {
             if (currentOperation == ")" && breaketsCount == 0)
                 throw new ParserException("Слишком много закрывающих скобок");
-            if (currentOperation == ")" && breaketsCount > 0)
+            if (currentOperation == ")")
             {
-                if (operations.Peek() == "(")
+                try
                 {
-                    numbers.Push(operations.Pop() + numbers.Pop() + currentOperation);
+                    while (operations.Peek() != "(")
+                    {
+                        DoOperation(operations.Pop());
+                    }
+
                 }
-                DoOperation(operations.Pop());
+                catch
+                {
+
+                }
+                if (operations.Count > 0)
+                {
+                    if (operations.Peek() == "(")
+                    {
+                        numbers.Push(operations.Pop() + numbers.Pop() + ")");
+
+                        if (operations.Count > 0)
+                        {
+                            TryPushOperation(operations.Pop());
+                        }
+
+                    }
+                }
                 breaketsCount--;
             }
             else if (currentOperation == "(")
@@ -155,7 +179,7 @@ namespace CourseWorkGraphDrawer
                     {
                         int currentPrioriry = operationPrioriry[currentOperation];
                         int previousPrioriry = operationPrioriry[operations.Peek()];
-                        if (currentPrioriry >= previousPrioriry)
+                        if (currentPrioriry > previousPrioriry)
                         {
                             operations.Push(currentOperation);
                         }
@@ -200,7 +224,8 @@ namespace CourseWorkGraphDrawer
             }
             csOperation = csOperation.Replace("sqrt", "Math.Sqrt");
             csOperation = csOperation.Replace("abs", "Math.Abs");
-            csOperation = csOperation.Replace("log", "Math.Log");
+            csOperation = csOperation.Replace("&", "Math.Log");
+            csOperation = csOperation.Replace("ln", "Math.Log");
             csOperation = csOperation.Replace("lg", "Math.Log10");
             if (unarOperations.Contains(operation))
             {
@@ -212,11 +237,27 @@ namespace CourseWorkGraphDrawer
                 string num1 = numbers.Pop();
                 res = $"Math.Pow({num1},{num2})";
             }
-            else
+            else if (operation == "&")
             {
                 string num2 = numbers.Pop();
                 string num1 = numbers.Pop();
-                res = $"{num1}{csOperation}{num2}";
+                res = $"Math.Log({num1},{num2})";
+            }
+            else
+            {
+                try
+                {
+                    string num2 = numbers.Pop();
+                    string num1 = numbers.Pop();
+                    res = $"{num1}{csOperation}{num2}";
+                }
+                catch
+                {
+                    if (operation == "-" && numbers.Count > 0)
+                    {
+                        numbers.Push(operation + numbers.Pop());
+                    }
+                }
             }
             numbers.Push(res);
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace CourseWorkGraphDrawer
@@ -29,7 +30,7 @@ namespace CourseWorkGraphDrawer
             foundIntersections = new Dictionary<Graph, List<Border>>();
             foundIntersectionsOrigins = new Dictionary<Graph, List<Point>>();
             
-            int gridSize = 200;
+            int gridSize = 100;
 
             coordinates = new TextBlock[2, gridSize];
             coordinatesGrid = new Line[2, gridSize];
@@ -145,6 +146,7 @@ namespace CourseWorkGraphDrawer
 
         public void AddGraph(Graph graph, Style style)
         {
+            HideIntersections();
             foundIntersections.Clear();
             foundIntersectionsOrigins.Clear();
             Polyline polyline = new Polyline
@@ -315,16 +317,9 @@ namespace CourseWorkGraphDrawer
                     }
                 }
             }
-
-
-
-
-            if (intersectionBorders.Count > 0)
-            {
-                foundIntersections.Add(graph, intersectionBorders);
-                foundIntersectionsOrigins.Add(graph, intersectionPoints);
-            }
-
+            
+            foundIntersections.Add(graph, intersectionBorders);
+            foundIntersectionsOrigins.Add(graph, intersectionPoints);
         }
         private Point GetIntersectionPoint(double x1, double y1, double x2, double y2,
            double x3, double y3, double x4, double y4)
@@ -356,35 +351,35 @@ namespace CourseWorkGraphDrawer
             }
 
             return default;
-            //return default;
+            
 
         }
 
-        private void OnIntersectionsColorChanged()
+        private void OnIntersectionsColorChanged(Brush brush)
         {
             foreach (var item in foundIntersections)
             {
                 foreach (Border intersection in item.Value)
                 {
-                    intersection.Background = Settings.IntersectionsBrush;
+                    intersection.Background = brush;
                 }
             }
         }
-        private void OnAxisColorChanged()
+        private void OnAxisColorChanged(Brush brush)
         {
-            xAxis.Stroke = Settings.AxisBrush;
-            yAxis.Stroke = Settings.AxisBrush;
+            xAxis.Stroke = brush;
+            yAxis.Stroke = brush;
 
         }
-        private void OnBackgroundColorChanged()
+        private void OnBackgroundColorChanged(Brush brush)
         {
             Background = Settings.BackgroundBrush;
         }
-        private void OnGridColorChanged()
+        private void OnGridColorChanged(Brush brush)
         {
             foreach (Line item in coordinatesGrid)
             {
-                item.Stroke = Settings.GridBrush;
+                item.Stroke = brush;
             }
         }
 

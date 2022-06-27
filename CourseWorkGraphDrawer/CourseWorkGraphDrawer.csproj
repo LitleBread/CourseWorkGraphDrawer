@@ -35,6 +35,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>b84bce76f1a2e4d7f7f3c5fe72aa2489-sound-waves-marketing.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -116,6 +119,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -133,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="bin\Debug\Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="bin\Debug\IconsAndProframmImages\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="b84bce76f1a2e4d7f7f3c5fe72aa2489-sound-waves-marketing.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

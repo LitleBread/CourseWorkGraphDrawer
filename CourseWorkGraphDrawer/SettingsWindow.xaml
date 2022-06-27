@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:CourseWorkGraphDrawer"
         xmlns:xctk1="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Settings" Height="230" Width="230">
+        Title="Настройки" Height="230" Width="250">
     <StackPanel Margin="15">
         <TextBlock Text="Что изменить" Margin="10" TextAlignment="Center"/>
         <ComboBox x:Name="targetComboBox">
