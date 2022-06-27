@@ -36,7 +36,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>b84bce76f1a2e4d7f7f3c5fe72aa2489-sound-waves-marketing.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -140,9 +141,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="bin\Debug\IconsAndProframmImages\logo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="b84bce76f1a2e4d7f7f3c5fe72aa2489-sound-waves-marketing.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
