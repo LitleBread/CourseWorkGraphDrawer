@@ -35,8 +35,7 @@ namespace CourseWorkGraphDrawer
             mousePosTextBlock.FontSize = 14;
             mousePosTextBlock.SetValue(Canvas.ZIndexProperty, 2);
 
-           // resetButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\restart.png"));
-           // saveImageButton.Source = new BitmapImage(new Uri(Environment.CurrentDirectory + "\\IconsAndProframmImages\\saveImage.png"));
+           
             
 
 
@@ -119,9 +118,9 @@ namespace CourseWorkGraphDrawer
             
             try
             {
-                double.TryParse(minVal.Text, out double min);
-                double.TryParse(maxVal.Text, out double max);
-                double.TryParse(stepVal.Text, out double step);
+                double.TryParse(minVal.Text.Replace(".", ","), out double min);
+                double.TryParse(maxVal.Text.Replace(".", ","), out double max);
+                double.TryParse(stepVal.Text.Replace(".", ","), out double step);
 
                 Graph graph = new Graph(func, isDec, min, max, step);
 

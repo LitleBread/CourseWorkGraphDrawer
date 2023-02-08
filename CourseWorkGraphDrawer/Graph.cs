@@ -10,7 +10,9 @@ namespace CourseWorkGraphDrawer
     {
         public string Function { 
             get 
-            { return function; }
+            { 
+                return function; 
+            }
             set 
             {
                 function = value;
@@ -30,10 +32,7 @@ namespace CourseWorkGraphDrawer
             this.step = step;
             this.isDecart = isDecart;
 
-            if (step <= 0)
-            {
-                step = 1e-5;
-            }
+            
             this.Function = funcString;
             CoordinateSystem = isDecart ? "Декартовая" : "Полярная";
             
@@ -41,6 +40,10 @@ namespace CourseWorkGraphDrawer
 
         private void Calculate()
         {
+            if (step <= 0)
+            {
+                step = 1e-5;
+            }
             Func<double, double> func = Compiler.GetDelegate(function);
             Points = new List<Point>();
             double yTemp;
